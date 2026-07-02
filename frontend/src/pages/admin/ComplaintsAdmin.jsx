@@ -124,7 +124,7 @@ export default function ComplaintsAdmin() {
               <Field label="الحالة" value={active.status} />
               <Field label="الاسم رباعي" value={active.fullName} />
               <Field label="رقم القيد" value={active.membershipNumber} />
-              <Field label="الجزئية / المركز" value={active.center} />
+              <Field label="الجزئية" value={active.center} />
               <Field label="رقم الهاتف" value={active.phone} />
               <Field label="الرغبة في التواصل" value={active.wantsContact ? 'نعم' : 'لا'} />
               <Field label="تاريخ الإرسال" value={formatDateTime(active.createdAt)} />

@@ -99,7 +99,7 @@ export default function Complaints() {
                 <input className="input" required value={form.membershipNumber} onChange={set('membershipNumber')} />
               </div>
               <div>
-                <label className="label">الجزئية / المركز *</label>
+                <label className="label">الجزئية *</label>
                 <input className="input" required value={form.center} onChange={set('center')} />
               </div>
               <div>

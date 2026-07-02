@@ -31,7 +31,7 @@ export default function Navbar() {
             <span className="text-sm font-extrabold text-white sm:text-base">
               {settings?.unionName || 'نقابة محامين جنوب القليوبية'}
             </span>
-            <span className="text-[11px] font-semibold tracking-wide text-gold-400">South Qalyubia Bar</span>
+            <span className="text-[11px] font-semibold tracking-wide text-gold-400">South Qalyubia Bar Association</span>
           </div>
           {settings?.logo ? (
             <img src={fileUrl(settings.logo)} alt="logo" className="h-11 w-11 rounded-xl object-cover" />

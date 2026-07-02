@@ -35,6 +35,11 @@ export default function Home() {
       {/* About */}
       <section className="container-page py-16">
         <SectionHeader title={s.aboutTitle || 'عن النقابة'} />
+        <div className="mb-6 flex justify-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-gold-500/30 bg-gold-500/10 px-4 py-1.5 text-sm font-bold text-gold-600">
+            🏛️ تأسست النقابة الفرعية عام 2016
+          </span>
+        </div>
         <div className="mx-auto max-w-3xl text-center text-lg leading-9 text-slate-600">
           {s.aboutText || 'نقابة محامين جنوب القليوبية تعمل على خدمة السادة المحامين بالنقابة الفرعية وتقديم كافة الخدمات.'}
         </div>
