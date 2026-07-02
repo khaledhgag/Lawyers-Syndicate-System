@@ -36,6 +36,10 @@ await connectDB();
 
 const app = express();
 
+// Behind a reverse proxy (Railway / Vercel / Nginx) → trust the first proxy hop
+// so express-rate-limit and req.ip read the real client IP from X-Forwarded-For.
+app.set('trust proxy', 1);
+
 // Security & parsing
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(
