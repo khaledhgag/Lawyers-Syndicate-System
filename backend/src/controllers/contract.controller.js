@@ -1,0 +1,43 @@
+import Contract from '../models/Contract.js';
+import { asyncHandler } from '../middleware/error.js';
+import { filePublicPath, deleteFile } from '../utils/fileHelper.js';
+
+export const getAll = asyncHandler(async (req, res) => {
+  const filter = req.query.all === 'true' ? {} : { isActive: true };
+  const items = await Contract.find(filter).sort({ order: 1, createdAt: -1 });
+  res.json({ success: true, count: items.length, data: items });
+});
+
+export const getOne = asyncHandler(async (req, res) => {
+  const item = await Contract.findById(req.params.id);
+  if (!item) return res.status(404).json({ success: false, message: 'التعاقد غير موجود' });
+  res.json({ success: true, data: item });
+});
+
+export const create = asyncHandler(async (req, res) => {
+  const body = { ...req.body };
+  if (req.file) body.image = filePublicPath(req.file);
+  const item = await Contract.create(body);
+  res.status(201).json({ success: true, data: item });
+});
+
+export const update = asyncHandler(async (req, res) => {
+  const item = await Contract.findById(req.params.id);
+  if (!item) return res.status(404).json({ success: false, message: 'التعاقد غير موجود' });
+  const body = { ...req.body };
+  if (req.file) {
+    deleteFile(item.image);
+    body.image = filePublicPath(req.file);
+  }
+  Object.assign(item, body);
+  await item.save();
+  res.json({ success: true, data: item });
+});
+
+export const remove = asyncHandler(async (req, res) => {
+  const item = await Contract.findById(req.params.id);
+  if (!item) return res.status(404).json({ success: false, message: 'التعاقد غير موجود' });
+  deleteFile(item.image);
+  await item.deleteOne();
+  res.json({ success: true, message: 'تم الحذف بنجاح' });
+});

@@ -1,0 +1,17 @@
+import express from 'express';
+import * as ctrl from '../controllers/complaint.controller.js';
+import { protect } from '../middleware/auth.js';
+import upload, { setUploadFolder } from '../middleware/upload.js';
+
+const router = express.Router();
+
+// Public submission
+router.post('/', setUploadFolder('complaints'), upload.single('attachment'), ctrl.create);
+
+// Admin
+router.get('/', protect, ctrl.getAll);
+router.get('/:id', protect, ctrl.getOne);
+router.put('/:id', protect, ctrl.update);
+router.delete('/:id', protect, ctrl.remove);
+
+export default router;
