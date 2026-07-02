@@ -42,9 +42,24 @@ app.set('trust proxy', 1);
 
 // Security & parsing
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+// Allowed origins from CLIENT_URL (comma-separated), normalized (no trailing slash)
+const allowedOrigins = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map((o) => o.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL?.split(',') || '*',
+    origin(origin, cb) {
+      // allow non-browser requests (curl, health checks, server-to-server)
+      if (!origin) return cb(null, true);
+      const clean = origin.replace(/\/+$/, '');
+      const ok =
+        allowedOrigins.length === 0 || // no CLIENT_URL set → allow all
+        allowedOrigins.includes(clean) ||
+        clean.endsWith('.vercel.app'); // allow Vercel production + preview deploys
+      return ok ? cb(null, true) : cb(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   })
 );
