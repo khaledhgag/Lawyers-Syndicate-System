@@ -123,7 +123,7 @@ export default function BooksAdmin() {
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold text-slate-900">
-          كتب النقض {pagination && <span className="text-base font-normal text-slate-400">({pagination.total.toLocaleString('ar-EG')})</span>}
+          كتب قانونية {pagination && <span className="text-base font-normal text-slate-400">({pagination.total.toLocaleString('ar-EG')})</span>}
         </h1>
         <div className="flex gap-2">
           {selected.length > 0 && (

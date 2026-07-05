@@ -13,7 +13,7 @@ const links = [
   { to: '/admin/offers', label: 'العروض الحصرية', Icon: FiTag },
   { to: '/admin/lectures', label: 'الندوات والمحاضرات', Icon: FiBookOpen },
   { to: '/admin/judgments', label: 'أحكام النقض', Icon: FiFileText },
-  { to: '/admin/books', label: 'كتب النقض', Icon: FiBook },
+  { to: '/admin/books', label: 'كتب قانونية', Icon: FiBook },
   { to: '/admin/contracts', label: 'التعاقدات', Icon: FiBriefcase },
   { to: '/admin/courts', label: 'المحاكم', Icon: FiMapPin },
   { to: '/admin/government-links', label: 'المواقع الحكومية', Icon: FiLink },

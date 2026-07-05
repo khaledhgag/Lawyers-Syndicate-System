@@ -4,7 +4,7 @@ export const navItems = [
   { to: '/offers', label: 'العروض الحصرية' },
   { to: '/lectures', label: 'الندوات والمحاضرات' },
   { to: '/judgments', label: 'أحكام النقض' },
-  { to: '/books', label: 'كتب النقض' },
+  { to: '/books', label: 'كتب قانونية' },
   { to: '/contracts', label: 'تعاقدات النقابة' },
   { to: '/government-links', label: 'المواقع الحكومية', dropdown: true },
   { to: '/activities', label: 'أنشطة النقابة' },

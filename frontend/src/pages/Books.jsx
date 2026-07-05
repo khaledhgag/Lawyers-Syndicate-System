@@ -54,8 +54,8 @@ export default function Books() {
 
   return (
     <>
-      <SEO title="كتب النقض" description="مكتبة كتب ومراجع محكمة النقض بتصنيفاتها المختلفة." />
-      <PageHero title="كتب النقض" subtitle="مكتبة شاملة لكتب ومراجع النقض - بحث وتصفية حسب التصنيف والسنة ورقم الطعن" />
+      <SEO title="كتب قانونية" description="مكتبة كتب ومراجع قانونية بتصنيفاتها المختلفة." />
+      <PageHero title="كتب قانونية" subtitle="مكتبة شاملة للكتب والمراجع القانونية - بحث وتصفية حسب التصنيف والسنة" />
 
       <div className="container-page py-10">
         {/* Filters */}
