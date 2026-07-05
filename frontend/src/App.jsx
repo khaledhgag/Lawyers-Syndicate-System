@@ -10,6 +10,7 @@ const Services = lazy(() => import('./pages/Services.jsx'));
 const Offers = lazy(() => import('./pages/Offers.jsx'));
 const Lectures = lazy(() => import('./pages/Lectures.jsx'));
 const Judgments = lazy(() => import('./pages/Judgments.jsx'));
+const Books = lazy(() => import('./pages/Books.jsx'));
 const Contracts = lazy(() => import('./pages/Contracts.jsx'));
 const GovernmentLinks = lazy(() => import('./pages/GovernmentLinks.jsx'));
 const Activities = lazy(() => import('./pages/Activities.jsx'));
@@ -26,6 +27,7 @@ const ServicesAdmin = lazy(() => import('./pages/admin/ServicesAdmin.jsx'));
 const OffersAdmin = lazy(() => import('./pages/admin/OffersAdmin.jsx'));
 const LecturesAdmin = lazy(() => import('./pages/admin/LecturesAdmin.jsx'));
 const JudgmentsAdmin = lazy(() => import('./pages/admin/JudgmentsAdmin.jsx'));
+const BooksAdmin = lazy(() => import('./pages/admin/BooksAdmin.jsx'));
 const ContractsAdmin = lazy(() => import('./pages/admin/ContractsAdmin.jsx'));
 const CourtsAdmin = lazy(() => import('./pages/admin/CourtsAdmin.jsx'));
 const GovernmentLinksAdmin = lazy(() => import('./pages/admin/GovernmentLinksAdmin.jsx'));
@@ -44,6 +46,7 @@ export default function App() {
           <Route path="offers" element={<Offers />} />
           <Route path="lectures" element={<Lectures />} />
           <Route path="judgments" element={<Judgments />} />
+          <Route path="books" element={<Books />} />
           <Route path="contracts" element={<Contracts />} />
           <Route path="government-links" element={<GovernmentLinks />} />
           <Route path="activities" element={<Activities />} />
@@ -69,6 +72,7 @@ export default function App() {
           <Route path="offers" element={<OffersAdmin />} />
           <Route path="lectures" element={<LecturesAdmin />} />
           <Route path="judgments" element={<JudgmentsAdmin />} />
+          <Route path="books" element={<BooksAdmin />} />
           <Route path="contracts" element={<ContractsAdmin />} />
           <Route path="courts" element={<CourtsAdmin />} />
           <Route path="government-links" element={<GovernmentLinksAdmin />} />

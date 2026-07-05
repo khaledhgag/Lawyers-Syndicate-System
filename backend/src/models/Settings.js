@@ -15,6 +15,12 @@ const settingsSchema = new mongoose.Schema(
     phone: { type: String, default: '' },
     email: { type: String, default: '' },
     workingHours: { type: String, default: '' },
+    // Floating WhatsApp button
+    whatsappNumber: { type: String, default: '' },
+    whatsappMessage: {
+      type: String,
+      default: 'السلام عليكم، تواصلت معكم من خلال الموقع الإلكتروني لنقابة محامين جنوب القليوبية 🌐',
+    },
     social: {
       facebook: { type: String, default: '' },
       twitter: { type: String, default: '' },

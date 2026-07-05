@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import {
-  FiUsers, FiBriefcase, FiTag, FiBookOpen, FiFileText, FiLink, FiActivity, FiInbox,
+  FiUsers, FiBriefcase, FiTag, FiBookOpen, FiFileText, FiBook, FiLink, FiActivity, FiInbox,
 } from 'react-icons/fi';
 import { statsApi } from '../../api/services.js';
 import useFetch from '../../hooks/useFetch.js';
@@ -30,6 +30,7 @@ export default function Dashboard() {
     { label: 'العروض', value: counts.offers, Icon: FiTag, color: 'bg-amber-500' },
     { label: 'الندوات', value: counts.lectures, Icon: FiBookOpen, color: 'bg-sky-500' },
     { label: 'أحكام النقض', value: counts.judgments, Icon: FiFileText, color: 'bg-rose-500' },
+    { label: 'كتب النقض', value: counts.books, Icon: FiBook, color: 'bg-cyan-500' },
     { label: 'التعاقدات', value: counts.contracts, Icon: FiBriefcase, color: 'bg-violet-500' },
     { label: 'المواقع الحكومية', value: counts.governmentLinks, Icon: FiLink, color: 'bg-teal-500' },
     { label: 'الأنشطة', value: counts.activities, Icon: FiActivity, color: 'bg-pink-500' },

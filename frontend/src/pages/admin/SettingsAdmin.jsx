@@ -26,7 +26,7 @@ export default function SettingsAdmin() {
     setSaving(true);
     try {
       const fd = new FormData();
-      ['unionName', 'aboutTitle', 'aboutText', 'address', 'googleMapsLink', 'googleMapsEmbed', 'phone', 'email', 'workingHours'].forEach((k) => fd.append(k, form[k] || ''));
+      ['unionName', 'aboutTitle', 'aboutText', 'address', 'googleMapsLink', 'googleMapsEmbed', 'phone', 'email', 'workingHours', 'whatsappNumber', 'whatsappMessage'].forEach((k) => fd.append(k, form[k] || ''));
       Object.entries(form.social || {}).forEach(([k, v]) => fd.append(`social.${k}`, v || ''));
       if (logo) fd.append('logo', logo);
       if (banner) fd.append('banner', banner);
@@ -64,6 +64,22 @@ export default function SettingsAdmin() {
             <div><label className="label">مواعيد العمل</label><input className="input" value={form.workingHours} onChange={set('workingHours')} /></div>
             <div><label className="label">رابط خرائط جوجل</label><input className="input" placeholder="https://maps.google.com/..." value={form.googleMapsLink} onChange={set('googleMapsLink')} /></div>
             <div><label className="label">رابط تضمين الخريطة (Embed src)</label><input className="input" placeholder="https://www.google.com/maps/embed?..." value={form.googleMapsEmbed} onChange={set('googleMapsEmbed')} /></div>
+          </div>
+        </div>
+
+        <div className="card p-5">
+          <h2 className="mb-1 font-bold text-slate-800">زر واتساب العائم</h2>
+          <p className="mb-4 text-xs text-slate-500">يظهر زر واتساب أخضر ثابت أسفل يسار الموقع. عند الضغط عليه تُفتح محادثة برسالة جاهزة تُعرّفك أن الزائر جاء من الموقع.</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="label">رقم واتساب (بصيغة دولية)</label>
+              <input dir="ltr" className="input text-left" placeholder="201001234567" value={form.whatsappNumber || ''} onChange={set('whatsappNumber')} />
+              <p className="mt-1 text-xs text-slate-400">مثال: 201001234567 (كود مصر 20 بدون + أو صفر). اتركه فارغاً لإخفاء الزر.</p>
+            </div>
+            <div>
+              <label className="label">الرسالة الجاهزة</label>
+              <textarea className="input min-h-20" value={form.whatsappMessage || ''} onChange={set('whatsappMessage')} placeholder="السلام عليكم، تواصلت معكم من خلال الموقع الإلكتروني..." />
+            </div>
           </div>
         </div>
 

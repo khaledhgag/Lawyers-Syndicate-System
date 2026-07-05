@@ -27,6 +27,18 @@ export const judgmentsApi = {
       })
       .then((r) => r.data),
 };
+export const booksApi = {
+  ...resource('/books'),
+  meta: () => api.get('/books/meta').then((r) => r.data),
+  bulkDelete: (ids) => api.post('/books/bulk-delete', { ids }).then((r) => r.data),
+  bulkUpload: (formData, onProgress) =>
+    api
+      .post('/books/bulk', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: onProgress,
+      })
+      .then((r) => r.data),
+};
 export const contractsApi = resource('/contracts');
 export const courtsApi = {
   ...resource('/courts'),

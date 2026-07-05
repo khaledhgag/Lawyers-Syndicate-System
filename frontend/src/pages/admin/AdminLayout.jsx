@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
 import {
-  FiGrid, FiUsers, FiBriefcase, FiTag, FiBookOpen, FiFileText,
+  FiGrid, FiUsers, FiBriefcase, FiTag, FiBookOpen, FiFileText, FiBook,
   FiLink, FiActivity, FiInbox, FiSettings, FiLogOut, FiMenu, FiX, FiExternalLink, FiMapPin,
 } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext.jsx';
@@ -13,6 +13,7 @@ const links = [
   { to: '/admin/offers', label: 'العروض الحصرية', Icon: FiTag },
   { to: '/admin/lectures', label: 'الندوات والمحاضرات', Icon: FiBookOpen },
   { to: '/admin/judgments', label: 'أحكام النقض', Icon: FiFileText },
+  { to: '/admin/books', label: 'كتب النقض', Icon: FiBook },
   { to: '/admin/contracts', label: 'التعاقدات', Icon: FiBriefcase },
   { to: '/admin/courts', label: 'المحاكم', Icon: FiMapPin },
   { to: '/admin/government-links', label: 'المواقع الحكومية', Icon: FiLink },

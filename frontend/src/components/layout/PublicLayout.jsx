@@ -2,6 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import Navbar from './Navbar.jsx';
 import Footer from './Footer.jsx';
+import FloatingWhatsApp from './FloatingWhatsApp.jsx';
 
 export default function PublicLayout() {
   const { pathname } = useLocation();
@@ -14,6 +15,7 @@ export default function PublicLayout() {
         <Outlet />
       </main>
       <Footer />
+      <FloatingWhatsApp />
     </div>
   );
 }

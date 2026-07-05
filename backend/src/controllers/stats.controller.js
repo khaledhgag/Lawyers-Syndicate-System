@@ -4,6 +4,7 @@ import Service from '../models/Service.js';
 import Offer from '../models/Offer.js';
 import Lecture from '../models/Lecture.js';
 import Judgment from '../models/Judgment.js';
+import Book from '../models/Book.js';
 import Contract from '../models/Contract.js';
 import GovernmentLink from '../models/GovernmentLink.js';
 import Activity from '../models/Activity.js';
@@ -18,6 +19,7 @@ export const getStats = asyncHandler(async (req, res) => {
     offers,
     lectures,
     judgments,
+    books,
     contracts,
     governmentLinks,
     activities,
@@ -32,6 +34,7 @@ export const getStats = asyncHandler(async (req, res) => {
     Offer.countDocuments(),
     Lecture.countDocuments(),
     Judgment.countDocuments(),
+    Book.countDocuments(),
     Contract.countDocuments(),
     GovernmentLink.countDocuments(),
     Activity.countDocuments(),
@@ -51,6 +54,7 @@ export const getStats = asyncHandler(async (req, res) => {
         offers,
         lectures,
         judgments,
+        books,
         contracts,
         governmentLinks,
         activities,
