@@ -9,10 +9,9 @@ import morgan from 'morgan';
 import compression from 'compression';
 import mongoSanitize from 'express-mongo-sanitize';
 import rateLimit from 'express-rate-limit';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 import connectDB from './src/config/db.js';
+import { uploadRoot } from './src/config/paths.js';
 import { notFound, errorHandler } from './src/middleware/error.js';
 
 // Routes
@@ -41,8 +40,11 @@ process.on('unhandledRejection', (reason) => {
   console.error('💥 Unhandled Rejection:', reason);
 });
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Validate critical env vars at boot (warn, never crash — health must stay up)
+const REQUIRED_ENV = ['MONGO_URI', 'JWT_SECRET'];
+const missingEnv = REQUIRED_ENV.filter((k) => !process.env[k]);
+if (missingEnv.length) console.error(`⚠️  Missing required env vars: ${missingEnv.join(', ')}`);
+if (!process.env.CLIENT_URL) console.warn('⚠️  CLIENT_URL not set — CORS will allow all origins.');
 
 const app = express();
 
@@ -92,8 +94,8 @@ app.use('/api', apiLimiter);
 // Stricter limiter for auth
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 30 });
 
-// Static uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Static uploads (long cache — filenames are unique/immutable)
+app.use('/uploads', express.static(uploadRoot, { maxAge: '7d', etag: true }));
 
 // Health — registered BEFORE the database connects, so it always responds 200
 // even while MongoDB is still connecting or unavailable.

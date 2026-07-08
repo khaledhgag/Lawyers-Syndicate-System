@@ -1,10 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const uploadRoot = path.join(__dirname, '../../uploads');
+import { uploadRoot } from '../config/paths.js';
 
 // Build a public relative path from a multer file
 export const filePublicPath = (file) => {
@@ -19,8 +15,11 @@ export const deleteFile = (publicPath) => {
   if (!publicPath) return;
   try {
     const rel = publicPath.replace(/^\/uploads\//, '');
-    const full = path.join(uploadRoot, rel);
-    if (full.startsWith(uploadRoot) && fs.existsSync(full)) fs.unlinkSync(full);
+    const full = path.resolve(uploadRoot, rel);
+    // Guard against path traversal: the resolved path must stay inside uploadRoot
+    if ((full === uploadRoot || full.startsWith(uploadRoot + path.sep)) && fs.existsSync(full)) {
+      fs.unlinkSync(full);
+    }
   } catch (e) {
     // ignore cleanup errors
   }

@@ -9,7 +9,7 @@ export const notFound = (req, res, next) => {
 
 // Central error handler
 export const errorHandler = (err, req, res, next) => {
-  let statusCode = err.statusCode || res.statusCode === 200 ? err.statusCode || 500 : res.statusCode;
+  let statusCode = err.statusCode || (res.statusCode && res.statusCode !== 200 ? res.statusCode : 500);
   let message = err.message || 'حدث خطأ في الخادم';
 
   // Mongoose bad ObjectId
