@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
+import mongoose from 'mongoose';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -30,15 +31,23 @@ import settingsRoutes from './src/routes/settings.routes.js';
 import statsRoutes from './src/routes/stats.routes.js';
 import courtRoutes from './src/routes/court.routes.js';
 
+// --- Global safety nets ---------------------------------------------------
+// Log fatal async errors but keep the HTTP server alive. A background failure
+// (e.g. a dropped DB socket) must never crash the process and cause 503s.
+process.on('uncaughtException', (err) => {
+  console.error('💥 Uncaught Exception:', err);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('💥 Unhandled Rejection:', reason);
+});
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-await connectDB();
-
 const app = express();
 
-// Behind a reverse proxy (Railway / Vercel / Nginx) → trust the first proxy hop
-// so express-rate-limit and req.ip read the real client IP from X-Forwarded-For.
+// Behind a reverse proxy (Hostinger / Railway / Vercel / Nginx) → trust the first
+// proxy hop so express-rate-limit and req.ip read the real client IP.
 app.set('trust proxy', 1);
 
 // Security & parsing
@@ -86,8 +95,16 @@ const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 30 });
 // Static uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Health
-app.get('/api/health', (req, res) => res.json({ success: true, message: 'API is running', time: new Date() }));
+// Health — registered BEFORE the database connects, so it always responds 200
+// even while MongoDB is still connecting or unavailable.
+app.get('/api/health', (req, res) =>
+  res.json({
+    success: true,
+    message: 'API is running',
+    db: mongoose.connection.readyState === 1 ? 'connected' : 'not-connected',
+    time: new Date(),
+  })
+);
 
 // Mount routes
 app.use('/api/auth', authLimiter, authRoutes);
@@ -109,5 +126,18 @@ app.use('/api/courts', courtRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
+// --- Start the HTTP server FIRST, then connect to MongoDB in the background ---
+// Binding the port immediately guarantees the platform's reverse proxy has an
+// upstream to reach (no 503), regardless of database availability.
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`));
+
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server listening on 0.0.0.0:${PORT} (${process.env.NODE_ENV || 'development'})`);
+
+  // Connect after the port is bound. A DB failure must never stop the server.
+  connectDB().catch((err) => console.error('❌ Database initialization error:', err));
+});
+
+server.on('error', (err) => {
+  console.error('💥 HTTP server error:', err);
+});
