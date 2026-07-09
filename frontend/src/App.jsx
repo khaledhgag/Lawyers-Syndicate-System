@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
-import { Suspense, lazy } from 'react';
+import { Suspense } from 'react';
+import lazy from './utils/lazyWithRetry.js';
 import PublicLayout from './components/layout/PublicLayout.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Loader from './components/ui/Loader.jsx';
