@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { FiSearch, FiTrash2, FiEye, FiPaperclip, FiPrinter, FiDownload } from 'react-icons/fi';
+import { FiSearch, FiTrash2, FiEye, FiPaperclip, FiPrinter, FiDownload, FiVideo } from 'react-icons/fi';
 import { complaintsApi } from '../../api/services.js';
 import { fileUrl } from '../../api/axios.js';
 import Loader from '../../components/ui/Loader.jsx';
@@ -119,7 +119,11 @@ export default function ComplaintsAdmin() {
               {data.map((c) => (
                 <tr key={c._id} className="hover:bg-slate-50">
                   <td className="p-3 text-center font-mono text-xs text-primary-700" dir="ltr">{c.ticketNumber || '—'}</td>
-                  <td className="p-3 font-medium text-slate-800">{c.subject}{c.attachment && <FiPaperclip className="mr-1 inline text-slate-400" />}</td>
+                  <td className="p-3 font-medium text-slate-800">
+                    {c.subject}
+                    {getComplaintAttachments(c).length > 0 && <FiPaperclip className="mr-1 inline text-slate-400" />}
+                    {c.video && <FiVideo className="mr-1 inline text-slate-400" />}
+                  </td>
                   <td className="p-3 text-center text-slate-500">{c.requestType}</td>
                   <td className="p-3 text-center text-slate-500">{c.fullName}</td>
                   <td className="p-3 text-center text-xs text-slate-400">{formatDateTime(c.createdAt)}</td>
@@ -202,8 +206,22 @@ export default function ComplaintsAdmin() {
               <p className="text-xs text-slate-400">تفاصيل الطلب</p>
               <p className="whitespace-pre-line rounded-lg bg-slate-50 p-3 leading-7 text-slate-700">{active.details}</p>
             </div>
-            {active.attachment && (
-              <a href={fileUrl(active.attachment)} target="_blank" rel="noreferrer" className="btn-outline w-fit"><FiPaperclip /> عرض المرفق</a>
+            {(getComplaintAttachments(active).length > 0 || active.video) && (
+              <div>
+                <p className="mb-2 text-xs text-slate-400">المرفقات</p>
+                <div className="flex flex-wrap gap-2">
+                  {getComplaintAttachments(active).map((attachment, index) => (
+                    <a key={attachment} href={fileUrl(attachment)} target="_blank" rel="noreferrer" className="btn-outline w-fit">
+                      <FiPaperclip /> ملف {index + 1}
+                    </a>
+                  ))}
+                  {active.video && (
+                    <a href={fileUrl(active.video)} target="_blank" rel="noreferrer" className="btn-outline w-fit">
+                      <FiVideo /> عرض الفيديو
+                    </a>
+                  )}
+                </div>
+              </div>
             )}
             <div>
               <label className="label">ملاحظات الإدارة</label>
@@ -238,6 +256,12 @@ const ReceiptField = ({ label, value }) => (
     <p className="mt-1 font-semibold text-slate-800">{value || '—'}</p>
   </div>
 );
+
+const getComplaintAttachments = (item) => {
+  const attachments = Array.isArray(item?.attachments) ? item.attachments.filter(Boolean) : [];
+  if (item?.attachment && !attachments.includes(item.attachment)) attachments.unshift(item.attachment);
+  return attachments;
+};
 
 const escapeHtml = (value = '') =>
   String(value)

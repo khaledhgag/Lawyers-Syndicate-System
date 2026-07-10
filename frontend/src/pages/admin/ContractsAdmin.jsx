@@ -36,7 +36,11 @@ export default function ContractsAdmin() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((c) => (
             <div key={c._id} className="card overflow-hidden">
-              {c.image && <img src={fileUrl(c.image)} alt="" className="h-36 w-full object-cover" />}
+              {c.image && (
+                <div className="flex aspect-square w-full items-center justify-center bg-slate-100">
+                  <img src={fileUrl(c.image)} alt="" className="h-full w-full object-contain" />
+                </div>
+              )}
               <div className="p-4">
                 <h3 className="font-bold text-slate-900">{c.organizationName}</h3>
                 <p className="mt-1 line-clamp-2 text-sm text-slate-500">{c.description}</p>

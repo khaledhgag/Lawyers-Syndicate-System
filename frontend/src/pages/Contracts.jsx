@@ -53,9 +53,11 @@ export default function Contracts() {
             {items.map((c) => (
               <div key={c._id} className="card flex flex-col overflow-hidden">
                 {c.image ? (
-                  <img src={fileUrl(c.image)} alt={c.organizationName} className="h-72 w-full object-cover sm:h-80" />
+                  <div className="flex aspect-square w-full items-center justify-center bg-slate-100">
+                    <img src={fileUrl(c.image)} alt={c.organizationName} className="h-full w-full object-contain" />
+                  </div>
                 ) : (
-                  <div className="flex h-72 items-center justify-center bg-primary-50 text-5xl text-primary-300 sm:h-80">🤝</div>
+                  <div className="flex aspect-square w-full items-center justify-center bg-primary-50 text-5xl text-primary-300">🤝</div>
                 )}
                 <div className="flex flex-1 flex-col p-6">
                   <div className="mb-3 flex flex-wrap items-center justify-between gap-2">

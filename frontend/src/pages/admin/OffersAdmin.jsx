@@ -39,7 +39,11 @@ export default function OffersAdmin() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((o) => (
             <div key={o._id} className="card overflow-hidden">
-              {o.image && <img src={fileUrl(o.image)} alt="" className="h-36 w-full object-cover" />}
+              {o.image && (
+                <div className="flex aspect-square w-full items-center justify-center bg-slate-100">
+                  <img src={fileUrl(o.image)} alt="" className="h-full w-full object-contain" />
+                </div>
+              )}
               <div className="p-4">
                 <div className="flex items-center justify-between">
                   <h3 className="font-bold text-slate-900">{o.name}</h3>

@@ -75,36 +75,54 @@ export default function Activities() {
         ) : items.length === 0 ? (
           <EmptyState message="لا توجد أنشطة في هذا القسم حالياً" />
         ) : (
-          <div className="space-y-10">
+          <div className="grid gap-7 lg:grid-cols-2">
             {items.map((a) => (
-              <div key={a._id} className="card overflow-hidden p-6">
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="text-xl font-bold text-primary-900">{a.title}</h3>
-                  <span className="flex items-center gap-1 text-sm text-slate-500">
-                    <FiCalendar /> {formatDate(a.date)}
-                  </span>
-                </div>
-                <p className="mb-3 flex items-center gap-1 text-xs text-slate-400">
-                  <FiClock /> تاريخ الإضافة: {formatDate(a.createdAt)}
-                </p>
-                <p className="leading-8 text-slate-600">{a.description}</p>
-                {a.gallery?.length > 0 && (
-                  <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                    {a.gallery.map((img, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setLightbox(fileUrl(img))}
-                        className="group relative aspect-video overflow-hidden rounded-xl"
-                      >
-                        <img
-                          src={fileUrl(img)}
-                          alt=""
-                          className="h-full w-full object-cover transition group-hover:scale-105"
-                        />
-                      </button>
-                    ))}
+              <div key={a._id} className="card flex flex-col overflow-hidden">
+                {a.gallery?.[0] ? (
+                  <button
+                    onClick={() => setLightbox(fileUrl(a.gallery[0]))}
+                    className="group flex aspect-square w-full items-center justify-center bg-slate-100"
+                  >
+                    <img
+                      src={fileUrl(a.gallery[0])}
+                      alt={a.title}
+                      className="h-full w-full object-contain transition group-hover:scale-105"
+                    />
+                  </button>
+                ) : (
+                  <div className="flex aspect-square w-full items-center justify-center bg-primary-50 text-5xl text-primary-300">
+                    <FiCalendar />
                   </div>
                 )}
+                <div className="flex flex-1 flex-col p-6">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <h3 className="text-xl font-bold text-primary-900">{a.title}</h3>
+                    <span className="flex items-center gap-1 text-sm text-slate-500">
+                      <FiCalendar /> {formatDate(a.date)}
+                    </span>
+                  </div>
+                  <p className="mb-3 flex items-center gap-1 text-xs text-slate-400">
+                    <FiClock /> تاريخ الإضافة: {formatDate(a.createdAt)}
+                  </p>
+                  <p className="leading-8 text-slate-600">{a.description}</p>
+                  {a.gallery?.length > 1 && (
+                    <div className="mt-5 grid grid-cols-4 gap-2">
+                      {a.gallery.slice(1, 5).map((img, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setLightbox(fileUrl(img))}
+                          className="group relative aspect-square overflow-hidden rounded-lg bg-slate-100"
+                        >
+                          <img
+                            src={fileUrl(img)}
+                            alt=""
+                            className="h-full w-full object-contain transition group-hover:scale-105"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>

@@ -30,7 +30,8 @@ const initial = {
 export default function Complaints() {
   const [mode, setMode] = useState('new'); // 'new' | 'track'
   const [form, setForm] = useState(initial);
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [video, setVideo] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [ticket, setTicket] = useState('');
@@ -56,12 +57,14 @@ export default function Complaints() {
         if (k === 'wantsContact') fd.append(k, v === 'نعم');
         else fd.append(k, v);
       });
-      if (file) fd.append('attachment', file);
+      files.forEach((item) => fd.append('attachments', item));
+      if (video) fd.append('video', video);
       const res = await complaintsApi.create(fd, true);
       setTicket(res?.data?.ticketNumber || '');
       setDone(true);
       setForm(initial);
-      setFile(null);
+      setFiles([]);
+      setVideo(null);
       toast.success('تم إرسال طلبك بنجاح');
     } catch (err) {
       toast.error(err?.response?.data?.message || 'تعذر إرسال الطلب');
@@ -225,11 +228,44 @@ export default function Complaints() {
               </div>
 
               <div className="md:col-span-2">
-                <label className="label">إرفاق ملف (اختياري)</label>
+                <label className="label">إرفاق ملفات (اختياري - بحد أقصى 5 ملفات)</label>
                 <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-slate-300 px-4 py-3 text-sm text-slate-500 hover:bg-slate-50">
                   <FiUpload />
-                  <span>{file ? file.name : 'اختر ملفاً (صورة أو PDF)'}</span>
-                  <input type="file" className="hidden" accept="image/*,application/pdf" onChange={(e) => setFile(e.target.files[0])} />
+                  <span>{files.length ? `تم اختيار ${files.length} ملف` : 'اختر ملفات صور أو PDF أو Word'}</span>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*,application/pdf,.doc,.docx"
+                    multiple
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.files || []);
+                      if (selected.length > 5) {
+                        toast.error('يمكن رفع 5 ملفات فقط كحد أقصى');
+                        e.target.value = '';
+                        return;
+                      }
+                      setFiles(selected);
+                    }}
+                  />
+                </label>
+                {files.length > 0 && (
+                  <ul className="mt-2 space-y-1 text-xs text-slate-500">
+                    {files.map((item) => <li key={`${item.name}-${item.size}`}>{item.name}</li>)}
+                  </ul>
+                )}
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="label">إرفاق فيديو (اختياري - فيديو واحد فقط)</label>
+                <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-slate-300 px-4 py-3 text-sm text-slate-500 hover:bg-slate-50">
+                  <FiUpload />
+                  <span>{video ? video.name : 'اختر فيديو MP4 أو WebM أو MOV'}</span>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="video/mp4,video/webm,video/quicktime"
+                    onChange={(e) => setVideo(e.target.files?.[0] || null)}
+                  />
                 </label>
               </div>
 

@@ -6,7 +6,16 @@ import upload, { setUploadFolder } from '../middleware/upload.js';
 const router = express.Router();
 
 // Public submission
-router.post('/', setUploadFolder('complaints'), upload.single('attachment'), ctrl.create);
+router.post(
+  '/',
+  setUploadFolder('complaints'),
+  upload.fields([
+    { name: 'attachments', maxCount: 5 },
+    { name: 'video', maxCount: 1 },
+    { name: 'attachment', maxCount: 1 },
+  ]),
+  ctrl.create
+);
 
 // Public tracking by ticket number
 router.get('/track/:ticket', ctrl.track);

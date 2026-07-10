@@ -54,9 +54,11 @@ export default function Offers() {
                     </span>
                   )}
                   {o.image ? (
-                    <img src={fileUrl(o.image)} alt={o.name} className="h-48 w-full object-cover" />
+                    <div className="flex aspect-square w-full items-center justify-center bg-slate-100">
+                      <img src={fileUrl(o.image)} alt={o.name} className="h-full w-full object-contain" />
+                    </div>
                   ) : (
-                    <div className="flex h-48 items-center justify-center bg-gold-400/10 text-5xl text-gold-500">🏷️</div>
+                    <div className="flex aspect-square w-full items-center justify-center bg-gold-400/10 text-5xl text-gold-500">🏷️</div>
                   )}
                   <div className="flex flex-1 flex-col p-5">
                     <h3 className="text-lg font-bold text-primary-900">{o.name}</h3>

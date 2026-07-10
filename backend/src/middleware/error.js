@@ -33,6 +33,10 @@ export const errorHandler = (err, req, res, next) => {
     statusCode = 400;
     message = 'حجم الملف أكبر من الحد المسموح';
   }
+  if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+    statusCode = 400;
+    message = err.field === 'attachments' ? 'الحد الأقصى للمرفقات هو 5 ملفات' : 'عدد الملفات المرفوعة أكبر من المسموح';
+  }
 
   if (process.env.NODE_ENV !== 'production') {
     console.error('🔴', err);

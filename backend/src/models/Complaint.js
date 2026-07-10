@@ -19,6 +19,8 @@ const complaintSchema = new mongoose.Schema(
     subject: { type: String, required: [true, 'عنوان الطلب مطلوب'], trim: true },
     details: { type: String, required: [true, 'تفاصيل الطلب مطلوبة'], trim: true },
     attachment: { type: String, default: '' },
+    attachments: [{ type: String }],
+    video: { type: String, default: '' },
     wantsContact: { type: Boolean, default: false },
     agreed: { type: Boolean, required: true },
     status: {

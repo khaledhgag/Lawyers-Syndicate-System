@@ -13,7 +13,21 @@ export const create = asyncHandler(async (req, res) => {
   if (!body.agreed) {
     return res.status(400).json({ success: false, message: 'يجب الموافقة على الشروط قبل الإرسال' });
   }
-  if (req.file) body.attachment = filePublicPath(req.file);
+
+  const uploadedAttachments = [
+    ...(req.files?.attachments || []),
+    ...(req.files?.attachment || []),
+  ];
+  if (uploadedAttachments.length > 5) {
+    return res.status(400).json({ success: false, message: 'الحد الأقصى للمرفقات هو 5 ملفات' });
+  }
+  if (uploadedAttachments.length) {
+    body.attachments = uploadedAttachments.map((file) => filePublicPath(file));
+    body.attachment = body.attachments[0] || '';
+  }
+  if (req.files?.video?.length) {
+    body.video = filePublicPath(req.files.video[0]);
+  }
 
   // Human-readable tracking number: SQ-YYYY-NNNNN
   const year = new Date().getFullYear();
@@ -107,6 +121,8 @@ export const remove = asyncHandler(async (req, res) => {
   const item = await Complaint.findById(req.params.id);
   if (!item) return res.status(404).json({ success: false, message: 'الطلب غير موجود' });
   deleteFile(item.attachment);
+  (item.attachments || []).forEach((file) => deleteFile(file));
+  deleteFile(item.video);
   await item.deleteOne();
   res.json({ success: true, message: 'تم الحذف بنجاح' });
 });
