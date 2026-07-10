@@ -157,7 +157,7 @@ export default function Judgments() {
           </div>
           <iframe
             title={viewer.title}
-            src={/\.pdf$/i.test(viewer.pdf) ? fileUrl(viewer.pdf) : `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl(viewer.pdf))}&embedded=true`}
+            src={/\.pdf$/i.test(viewer.pdf) ? fileUrl(viewer.pdf) : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl(viewer.pdf))}`}
             className="flex-1 rounded-lg bg-white"
           />
         </div>
