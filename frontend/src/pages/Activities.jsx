@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { FiCalendar, FiClock } from 'react-icons/fi';
+import { FiCalendar } from 'react-icons/fi';
 import SEO from '../components/ui/SEO.jsx';
 import PageHero from '../components/layout/PageHero.jsx';
 import Loader from '../components/ui/Loader.jsx';
@@ -24,8 +24,8 @@ export default function Activities() {
   const items = useMemo(() => {
     const filtered = tab ? all.filter((a) => a.type === tab) : all;
     return [...filtered].sort((a, b) => {
-      const first = new Date(a.createdAt || a.date || 0).getTime();
-      const second = new Date(b.createdAt || b.date || 0).getTime();
+      const first = new Date(a.date || 0).getTime();
+      const second = new Date(b.date || 0).getTime();
       return sort === 'oldest' ? first - second : second - first;
     });
   }, [all, tab, sort]);
@@ -61,7 +61,7 @@ export default function Activities() {
         )}
 
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-white p-4 shadow-sm">
-          <p className="text-sm font-semibold text-slate-700">ترتيب الأنشطة حسب تاريخ الإضافة</p>
+          <p className="text-sm font-semibold text-slate-700">ترتيب الأنشطة حسب تاريخ النشاط</p>
           <select className="input max-w-xs" value={sort} onChange={(e) => setSort(e.target.value)}>
             <option value="newest">الأحدث للأقدم</option>
             <option value="oldest">الأقدم للأحدث</option>
@@ -101,9 +101,6 @@ export default function Activities() {
                       <FiCalendar /> {formatDate(a.date)}
                     </span>
                   </div>
-                  <p className="mb-3 flex items-center gap-1 text-xs text-slate-400">
-                    <FiClock /> تاريخ الإضافة: {formatDate(a.createdAt)}
-                  </p>
                   <p className="leading-8 text-slate-600">{a.description}</p>
                   {a.gallery?.length > 1 && (
                     <div className="mt-5 grid grid-cols-4 gap-2">

@@ -8,9 +8,9 @@ import ErrorState from '../../components/ui/ErrorState.jsx';
 import EmptyState from '../../components/ui/EmptyState.jsx';
 import Modal from '../../components/ui/Modal.jsx';
 import { AdminHeader, ImageInput } from '../../components/admin/AdminShared.jsx';
-import { formatDate } from '../../utils/format.js';
+import { formatDate, formatDateTime } from '../../utils/format.js';
 
-const empty = { name: '', description: '', discount: '', expirationDate: '', image: null };
+const empty = { name: '', description: '', discount: '', date: '', expirationDate: '', image: null };
 const toDateInput = (d) => (d ? new Date(d).toISOString().slice(0, 10) : '');
 
 export default function OffersAdmin() {
@@ -20,11 +20,11 @@ export default function OffersAdmin() {
   const [editId, setEditId] = useState(null);
 
   const openNew = () => { setForm(empty); setEditId(null); setOpen(true); };
-  const openEdit = (o) => { setForm({ ...o, expirationDate: toDateInput(o.expirationDate), image: o.image }); setEditId(o._id); setOpen(true); };
+  const openEdit = (o) => { setForm({ ...o, date: toDateInput(o.date), expirationDate: toDateInput(o.expirationDate), image: o.image }); setEditId(o._id); setOpen(true); };
 
   const submit = async (e) => {
     e.preventDefault();
-    const payload = { name: form.name, description: form.description, discount: form.discount, expirationDate: form.expirationDate };
+    const payload = { name: form.name, description: form.description, discount: form.discount, date: form.date, expirationDate: form.expirationDate };
     if (form.image instanceof File) payload.image = form.image;
     else if (form.image === '') payload.image = ''; // explicit removal
     if (await save(editId, payload, true)) setOpen(false);
@@ -50,6 +50,8 @@ export default function OffersAdmin() {
                   {o.discount && <span className="badge bg-gold-400/20 text-gold-600">{o.discount}</span>}
                 </div>
                 <p className="mt-1 line-clamp-2 text-sm text-slate-500">{o.description}</p>
+                {o.date && <p className="mt-1 text-xs text-slate-400">تاريخ العرض: {formatDate(o.date)}</p>}
+                <p className="mt-1 text-xs text-slate-400">تاريخ الإضافة: {formatDateTime(o.createdAt)}</p>
                 {o.expirationDate && <p className="mt-1 text-xs text-slate-400">ينتهي: {formatDate(o.expirationDate)}</p>}
                 <div className="mt-3 flex gap-2">
                   <button onClick={() => openEdit(o)} className="btn-outline px-3 py-1.5 text-xs"><FiEdit2 /> تعديل</button>
@@ -65,6 +67,7 @@ export default function OffersAdmin() {
         <form onSubmit={submit} className="space-y-4">
           <ImageInput value={form.image} onChange={(f) => setForm({ ...form, image: f })} />
           <div><label className="label">اسم العرض *</label><input className="input" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+          <div><label className="label">تاريخ العرض *</label><input type="date" className="input" required value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} /></div>
           <div><label className="label">الوصف *</label><textarea className="input min-h-24" required value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
           <div className="grid grid-cols-2 gap-3">
             <div><label className="label">قيمة الخصم</label><input className="input" placeholder="مثال: 20%" value={form.discount} onChange={(e) => setForm({ ...form, discount: e.target.value })} /></div>

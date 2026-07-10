@@ -6,6 +6,7 @@ const offerSchema = new mongoose.Schema(
     description: { type: String, required: [true, 'الوصف مطلوب'], trim: true },
     discount: { type: String, default: '', trim: true },
     image: { type: String, default: '' },
+    date: { type: Date },
     expirationDate: { type: Date },
     isActive: { type: Boolean, default: true },
   },
@@ -19,5 +20,6 @@ offerSchema.virtual('isExpired').get(function () {
 
 offerSchema.set('toJSON', { virtuals: true });
 offerSchema.set('toObject', { virtuals: true });
+offerSchema.index({ date: -1, createdAt: -1 });
 
 export default mongoose.model('Offer', offerSchema);

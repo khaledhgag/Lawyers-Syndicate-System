@@ -17,8 +17,8 @@ export default function Offers() {
   const items = useMemo(() => {
     const source = data?.data || [];
     return [...source].sort((a, b) => {
-      const first = new Date(a.createdAt || 0).getTime();
-      const second = new Date(b.createdAt || 0).getTime();
+      const first = new Date(a.date || 0).getTime();
+      const second = new Date(b.date || 0).getTime();
       return sort === 'oldest' ? first - second : second - first;
     });
   }, [data, sort]);
@@ -29,7 +29,7 @@ export default function Offers() {
       <PageHero title="العروض الحصرية" subtitle="عروض وخصومات حصرية للسادة المحامين" />
       <div className="container-page py-12">
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-white p-4 shadow-sm">
-          <p className="text-sm font-semibold text-slate-700">ترتيب العروض حسب تاريخ الإضافة</p>
+          <p className="text-sm font-semibold text-slate-700">ترتيب العروض حسب تاريخ العرض</p>
           <select className="input max-w-xs" value={sort} onChange={(e) => setSort(e.target.value)}>
             <option value="newest">الأحدث للأقدم</option>
             <option value="oldest">الأقدم للأحدث</option>
@@ -63,9 +63,11 @@ export default function Offers() {
                   <div className="flex flex-1 flex-col p-5">
                     <h3 className="text-lg font-bold text-primary-900">{o.name}</h3>
                     <p className="mt-2 flex-1 text-sm text-slate-600">{o.description}</p>
-                    <p className="mt-4 flex items-center gap-1 text-xs text-slate-400">
-                      <FiClock /> تاريخ الإضافة: {formatDate(o.createdAt)}
-                    </p>
+                    {o.date && (
+                      <p className="mt-4 flex items-center gap-1 text-xs text-slate-400">
+                        <FiClock /> تاريخ العرض: {formatDate(o.date)}
+                      </p>
+                    )}
                     <div className="mt-4 flex items-center justify-between text-xs">
                       {o.expirationDate && (
                         <span className="flex items-center gap-1 text-slate-500">

@@ -4,7 +4,7 @@ import { filePublicPath, deleteFile } from '../utils/fileHelper.js';
 
 export const getAll = asyncHandler(async (req, res) => {
   const filter = req.query.all === 'true' ? {} : { isActive: true };
-  const items = await Contract.find(filter).sort({ order: 1, createdAt: -1 });
+  const items = await Contract.find(filter).sort({ date: -1, createdAt: -1 });
   res.json({ success: true, count: items.length, data: items });
 });
 

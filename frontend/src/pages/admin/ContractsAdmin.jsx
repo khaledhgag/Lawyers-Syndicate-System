@@ -8,8 +8,10 @@ import ErrorState from '../../components/ui/ErrorState.jsx';
 import EmptyState from '../../components/ui/EmptyState.jsx';
 import Modal from '../../components/ui/Modal.jsx';
 import { AdminHeader, ImageInput } from '../../components/admin/AdminShared.jsx';
+import { formatDate, formatDateTime } from '../../utils/format.js';
 
-const empty = { organizationName: '', description: '', benefits: '', contactInfo: '', order: 0, image: null };
+const empty = { organizationName: '', description: '', benefits: '', contactInfo: '', date: '', image: null };
+const toDateInput = (d) => (d ? new Date(d).toISOString().slice(0, 10) : '');
 
 export default function ContractsAdmin() {
   const { items, loading, error, saving, save, remove, load } = useCrud(contractsApi);
@@ -18,11 +20,11 @@ export default function ContractsAdmin() {
   const [editId, setEditId] = useState(null);
 
   const openNew = () => { setForm(empty); setEditId(null); setOpen(true); };
-  const openEdit = (c) => { setForm({ ...c, image: c.image }); setEditId(c._id); setOpen(true); };
+  const openEdit = (c) => { setForm({ ...c, date: toDateInput(c.date), image: c.image }); setEditId(c._id); setOpen(true); };
 
   const submit = async (e) => {
     e.preventDefault();
-    const payload = { organizationName: form.organizationName, description: form.description, benefits: form.benefits, contactInfo: form.contactInfo, order: form.order };
+    const payload = { organizationName: form.organizationName, description: form.description, benefits: form.benefits, contactInfo: form.contactInfo, date: form.date };
     if (form.image instanceof File) payload.image = form.image;
     if (await save(editId, payload, true)) setOpen(false);
   };
@@ -44,6 +46,8 @@ export default function ContractsAdmin() {
               <div className="p-4">
                 <h3 className="font-bold text-slate-900">{c.organizationName}</h3>
                 <p className="mt-1 line-clamp-2 text-sm text-slate-500">{c.description}</p>
+                {c.date && <p className="mt-1 text-xs text-slate-400">تاريخ التعاقد: {formatDate(c.date)}</p>}
+                <p className="mt-1 text-xs text-slate-400">تاريخ الإضافة: {formatDateTime(c.createdAt)}</p>
                 <div className="mt-3 flex gap-2">
                   <button onClick={() => openEdit(c)} className="btn-outline px-3 py-1.5 text-xs"><FiEdit2 /> تعديل</button>
                   <button onClick={() => remove(c._id)} className="btn-danger px-3 py-1.5 text-xs"><FiTrash2 /> حذف</button>
@@ -58,10 +62,10 @@ export default function ContractsAdmin() {
         <form onSubmit={submit} className="space-y-4">
           <ImageInput value={form.image} onChange={(f) => setForm({ ...form, image: f })} />
           <div><label className="label">اسم الجهة *</label><input className="input" required value={form.organizationName} onChange={(e) => setForm({ ...form, organizationName: e.target.value })} /></div>
+          <div><label className="label">تاريخ التعاقد *</label><input type="date" className="input" required value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} /></div>
           <div><label className="label">الوصف *</label><textarea className="input min-h-20" required value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
           <div><label className="label">المميزات</label><textarea className="input min-h-20" value={form.benefits} onChange={(e) => setForm({ ...form, benefits: e.target.value })} /></div>
           <div><label className="label">بيانات التواصل</label><input className="input" value={form.contactInfo} onChange={(e) => setForm({ ...form, contactInfo: e.target.value })} /></div>
-          <div><label className="label">الترتيب</label><input type="number" className="input" value={form.order} onChange={(e) => setForm({ ...form, order: e.target.value })} /></div>
           <div className="flex justify-end gap-2"><button type="button" onClick={() => setOpen(false)} className="btn-outline">إلغاء</button><button disabled={saving} className="btn-primary">{saving ? 'جاري الحفظ...' : 'حفظ'}</button></div>
         </form>
       </Modal>

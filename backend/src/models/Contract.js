@@ -7,10 +7,12 @@ const contractSchema = new mongoose.Schema(
     benefits: { type: String, default: '', trim: true },
     contactInfo: { type: String, default: '', trim: true },
     image: { type: String, default: '' },
-    order: { type: Number, default: 0 },
+    date: { type: Date },
     isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
+
+contractSchema.index({ date: -1, createdAt: -1 });
 
 export default mongoose.model('Contract', contractSchema);

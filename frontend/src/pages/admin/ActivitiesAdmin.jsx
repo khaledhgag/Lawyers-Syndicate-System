@@ -9,7 +9,7 @@ import ErrorState from '../../components/ui/ErrorState.jsx';
 import EmptyState from '../../components/ui/EmptyState.jsx';
 import Modal from '../../components/ui/Modal.jsx';
 import { AdminHeader } from '../../components/admin/AdminShared.jsx';
-import { formatDate } from '../../utils/format.js';
+import { formatDate, formatDateTime } from '../../utils/format.js';
 
 const empty = { title: '', description: '', date: '', type: '' };
 const toDateInput = (d) => (d ? new Date(d).toISOString().slice(0, 10) : '');
@@ -63,7 +63,8 @@ export default function ActivitiesAdmin() {
                 <div>
                   <span className="badge bg-primary-50 text-primary-700">{a.type}</span>
                   <h3 className="mt-1 font-bold text-slate-900">{a.title}</h3>
-                  <p className="text-xs text-slate-400">{formatDate(a.date)} · {a.gallery?.length || 0} صورة</p>
+                  <p className="text-xs text-slate-400">تاريخ النشاط: {formatDate(a.date)} · {a.gallery?.length || 0} صورة</p>
+                  <p className="mt-1 text-xs text-slate-400">تاريخ الإضافة: {formatDateTime(a.createdAt)}</p>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => openEdit(a)} className="btn-outline px-3 py-1.5 text-xs"><FiEdit2 /></button>
