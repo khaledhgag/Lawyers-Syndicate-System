@@ -18,7 +18,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
 import connectDB from '../config/db.js';
-import Judgment, { JUDGMENT_CATEGORIES } from '../models/Judgment.js';
+import Judgment from '../models/Judgment.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,16 +31,11 @@ const getArg = (name) => {
   return i !== -1 ? args[i + 1] : undefined;
 };
 const dir = getArg('dir');
-const category = getArg('category');
 const move = args.includes('--move');
 const BATCH = 1000;
 
-if (!dir || !category) {
-  console.error('❌ مطلوب: --dir <المجلد> و --category <جنائي|مدني>');
-  process.exit(1);
-}
-if (!JUDGMENT_CATEGORIES.includes(category)) {
-  console.error(`❌ تصنيف غير صالح. المسموح: ${JUDGMENT_CATEGORIES.join(' | ')}`);
+if (!dir) {
+  console.error('❌ مطلوب: --dir <المجلد>');
   process.exit(1);
 }
 if (!fs.existsSync(dir)) {
@@ -63,7 +58,7 @@ const run = async () => {
   if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
   const files = collect(dir);
-  console.log(`📁 وجدت ${files.length} ملف PDF. التصنيف: ${category}. الوضع: ${move ? 'نقل' : 'نسخ'}`);
+  console.log(`📁 وجدت ${files.length} ملف PDF. الوضع: ${move ? 'نقل' : 'نسخ'}`);
   if (!files.length) return process.exit(0);
 
   let buffer = [];
@@ -91,7 +86,6 @@ const run = async () => {
     }
     buffer.push({
       title: base || 'حكم بدون عنوان',
-      category,
       pdf: `/uploads/pdfs/judgments/imported/${unique}`,
     });
     if (buffer.length >= BATCH) await flush();

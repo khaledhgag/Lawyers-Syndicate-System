@@ -12,7 +12,7 @@ import Lecture from '../models/Lecture.js';
 import Contract from '../models/Contract.js';
 import GovernmentLink from '../models/GovernmentLink.js';
 import Activity from '../models/Activity.js';
-import Judgment, { JUDGMENT_CATEGORIES } from '../models/Judgment.js';
+import Judgment from '../models/Judgment.js';
 import Court from '../models/Court.js';
 
 const run = async () => {
@@ -123,12 +123,10 @@ const run = async () => {
   if ((await Judgment.countDocuments()) === 0) {
     const sample = [];
     for (let i = 1; i <= 30; i++) {
-      const cat = JUDGMENT_CATEGORIES[i % JUDGMENT_CATEGORIES.length];
       sample.push({
-        title: `حكم نقض رقم ${i} - ${cat}`,
+        title: `حكم نقض رقم ${i}`,
         appealNumber: `${1000 + i}`,
         year: 2015 + (i % 10),
-        category: cat,
         pdf: '/uploads/pdfs/judgments/sample.pdf',
         summary: 'مبدأ قانوني هام في هذا الحكم.',
       });

@@ -26,7 +26,6 @@ export const getStats = asyncHandler(async (req, res) => {
     complaintsTotal,
     complaintsNew,
     complaintsByStatus,
-    judgmentsByCategory,
     recentComplaints,
   ] = await Promise.all([
     BoardMember.countDocuments(),
@@ -41,7 +40,6 @@ export const getStats = asyncHandler(async (req, res) => {
     Complaint.countDocuments(),
     Complaint.countDocuments({ status: 'جديد' }),
     Complaint.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
-    Judgment.aggregate([{ $group: { _id: '$category', count: { $sum: 1 } } }]),
     Complaint.find().sort({ createdAt: -1 }).limit(5).lean(),
   ]);
 
@@ -62,7 +60,6 @@ export const getStats = asyncHandler(async (req, res) => {
         newComplaints: complaintsNew,
       },
       complaintsByStatus,
-      judgmentsByCategory,
       recentComplaints,
     },
   });

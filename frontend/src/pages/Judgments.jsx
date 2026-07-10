@@ -13,8 +13,8 @@ import { fileUrl } from '../api/axios.js';
 const LIMIT = 12;
 
 export default function Judgments() {
-  const [filters, setFilters] = useState({ search: '', category: '', year: '', appealNumber: '' });
-  const [applied, setApplied] = useState({ search: '', category: '', year: '', appealNumber: '' });
+  const [filters, setFilters] = useState({ search: '', year: '', appealNumber: '' });
+  const [applied, setApplied] = useState({ search: '', year: '', appealNumber: '' });
   const [page, setPage] = useState(1);
   const [meta, setMeta] = useState({ categories: [], years: [] });
   const [state, setState] = useState({ data: [], pagination: null, loading: true, error: null });
@@ -45,7 +45,7 @@ export default function Judgments() {
   };
 
   const reset = () => {
-    const empty = { search: '', category: '', year: '', appealNumber: '' };
+    const empty = { search: '', year: '', appealNumber: '' };
     setFilters(empty);
     setApplied(empty);
     setPage(1);
@@ -68,20 +68,11 @@ export default function Judgments() {
                 <FiSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   className="input pr-9"
-                  placeholder="ابحث باسم الحكم..."
+                  placeholder="ابحث باسم الحكم أو رقم الطعن..."
                   value={filters.search}
                   onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                 />
               </div>
-            </div>
-            <div>
-              <label className="label">التصنيف</label>
-              <select className="input" value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })}>
-                <option value="">كل التصنيفات</option>
-                {meta.categories.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
             </div>
             {meta.years.length > 0 && (
               <div>
@@ -121,7 +112,7 @@ export default function Judgments() {
               {data.map((j) => (
                 <div key={j._id} className="card flex flex-col p-5">
                   <div className="mb-3 flex items-center justify-between">
-                    <span className="badge bg-primary-50 text-primary-700">{j.category}</span>
+                    <span className="badge bg-primary-50 text-primary-700">حكم نقض</span>
                     {j.year && <span className="text-xs text-slate-400">سنة {j.year}</span>}
                   </div>
                   <h3 className="font-bold text-slate-900 line-clamp-2">{j.title}</h3>
@@ -150,7 +141,7 @@ export default function Judgments() {
             <div>
               <h3 className="font-bold">{viewer.title}</h3>
               <p className="text-xs text-slate-300">
-                {[viewer.category, viewer.appealNumber && `رقم الطعن: ${viewer.appealNumber}`, viewer.year && `سنة ${viewer.year}`]
+                {[viewer.appealNumber && `رقم الطعن: ${viewer.appealNumber}`, viewer.year && `سنة ${viewer.year}`]
                   .filter(Boolean)
                   .join(' - ')}
               </p>

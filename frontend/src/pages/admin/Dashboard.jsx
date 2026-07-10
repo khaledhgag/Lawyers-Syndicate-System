@@ -22,7 +22,7 @@ export default function Dashboard() {
   if (loading) return <Loader full />;
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
-  const { counts, recentComplaints, judgmentsByCategory } = data.data;
+  const { counts, recentComplaints } = data.data;
 
   const cards = [
     { label: 'أعضاء المجلس', value: counts.boardMembers, Icon: FiUsers, color: 'bg-indigo-500' },
@@ -56,28 +56,7 @@ export default function Dashboard() {
         ))}
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        <div className="card p-5">
-          <h2 className="mb-4 font-bold text-slate-800">أحكام النقض حسب التصنيف</h2>
-          <div className="space-y-3">
-            {judgmentsByCategory.length === 0 && <p className="text-sm text-slate-400">لا توجد بيانات</p>}
-            {judgmentsByCategory.map((j) => {
-              const max = Math.max(...judgmentsByCategory.map((x) => x.count), 1);
-              return (
-                <div key={j._id}>
-                  <div className="mb-1 flex justify-between text-sm">
-                    <span className="text-slate-600">{j._id}</span>
-                    <span className="font-semibold text-slate-800">{j.count.toLocaleString('ar-EG')}</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-slate-100">
-                    <div className="h-2 rounded-full bg-primary-600" style={{ width: `${(j.count / max) * 100}%` }} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
+      <div className="mt-8">
         <div className="card p-5">
           <h2 className="mb-4 font-bold text-slate-800">أحدث الطلبات والشكاوى</h2>
           <div className="divide-y divide-slate-100">

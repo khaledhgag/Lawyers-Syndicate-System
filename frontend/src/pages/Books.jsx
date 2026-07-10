@@ -12,8 +12,8 @@ import { fileUrl } from '../api/axios.js';
 const LIMIT = 12;
 
 export default function Books() {
-  const [filters, setFilters] = useState({ search: '', category: '', year: '', appealNumber: '' });
-  const [applied, setApplied] = useState({ search: '', category: '', year: '', appealNumber: '' });
+  const [filters, setFilters] = useState({ search: '', year: '', appealNumber: '' });
+  const [applied, setApplied] = useState({ search: '', year: '', appealNumber: '' });
   const [page, setPage] = useState(1);
   const [meta, setMeta] = useState({ categories: [], years: [] });
   const [state, setState] = useState({ data: [], pagination: null, loading: true, error: null });
@@ -44,7 +44,7 @@ export default function Books() {
   };
 
   const reset = () => {
-    const empty = { search: '', category: '', year: '', appealNumber: '' };
+    const empty = { search: '', year: '', appealNumber: '' };
     setFilters(empty);
     setApplied(empty);
     setPage(1);
@@ -72,15 +72,6 @@ export default function Books() {
                   onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                 />
               </div>
-            </div>
-            <div>
-              <label className="label">التصنيف</label>
-              <select className="input" value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })}>
-                <option value="">كل التصنيفات</option>
-                {meta.categories.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
             </div>
             {meta.years.length > 0 && (
               <div>
@@ -120,7 +111,7 @@ export default function Books() {
               {data.map((b) => (
                 <div key={b._id} className="card flex flex-col p-5">
                   <div className="mb-3 flex items-center justify-between">
-                    <span className="badge bg-primary-50 text-primary-700">{b.category}</span>
+                    <span className="badge bg-primary-50 text-primary-700">كتاب قانوني</span>
                     {b.year && <span className="text-xs text-slate-400">سنة {b.year}</span>}
                   </div>
                   <h3 className="font-bold text-slate-900 line-clamp-2">{b.title}</h3>
@@ -149,7 +140,7 @@ export default function Books() {
             <div>
               <h3 className="font-bold">{viewer.title}</h3>
               <p className="text-xs text-slate-300">
-                {[viewer.category, viewer.appealNumber && `رقم الطعن: ${viewer.appealNumber}`, viewer.year && `سنة ${viewer.year}`]
+                {[viewer.appealNumber && `رقم الطعن: ${viewer.appealNumber}`, viewer.year && `سنة ${viewer.year}`]
                   .filter(Boolean)
                   .join(' - ')}
               </p>

@@ -1,4 +1,4 @@
-import Judgment, { JUDGMENT_CATEGORIES } from '../models/Judgment.js';
+import Judgment from '../models/Judgment.js';
 import { asyncHandler } from '../middleware/error.js';
 import { filePublicPath, deleteFile } from '../utils/fileHelper.js';
 
@@ -9,10 +9,9 @@ export const getAll = asyncHandler(async (req, res) => {
   const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 12));
   const skip = (page - 1) * limit;
 
-  const { category, year, appealNumber, search } = req.query;
+  const { year, appealNumber, search } = req.query;
   const filter = {};
   if (req.query.all !== 'true') filter.isActive = true;
-  if (category && JUDGMENT_CATEGORIES.includes(category)) filter.category = category;
   if (year) filter.year = Number(year);
   if (appealNumber) filter.appealNumber = { $regex: appealNumber.trim(), $options: 'i' };
 
@@ -55,8 +54,7 @@ export const getMeta = asyncHandler(async (req, res) => {
   const years = await Judgment.distinct('year', { isActive: true });
   res.json({
     success: true,
-    categories: JUDGMENT_CATEGORIES,
-    years: years.sort((a, b) => b - a),
+    years: years.filter(Boolean).sort((a, b) => b - a),
   });
 });
 
@@ -107,10 +105,6 @@ const decodeName = (name) => {
 // @desc Bulk upload many judgment PDFs at once (each stored with its own name)
 // @route POST /api/judgments/bulk
 export const bulkCreate = asyncHandler(async (req, res) => {
-  const { category } = req.body;
-  if (!JUDGMENT_CATEGORIES.includes(category)) {
-    return res.status(400).json({ success: false, message: 'اختر تصنيفاً صحيحاً (جنائي أو مدني)' });
-  }
   if (!req.files || !req.files.length) {
     return res.status(400).json({ success: false, message: 'لم يتم رفع أي ملفات' });
   }
@@ -120,7 +114,6 @@ export const bulkCreate = asyncHandler(async (req, res) => {
     const base = decodeName(f.originalname).replace(/\.pdf$/i, '').trim();
     return {
       title: base || 'حكم بدون عنوان',
-      category,
       pdf: filePublicPath(f),
     };
   });

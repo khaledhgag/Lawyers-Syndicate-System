@@ -10,13 +10,12 @@ import Modal from '../../components/ui/Modal.jsx';
 import { FileInput } from '../../components/admin/AdminShared.jsx';
 
 const LIMIT = 15;
-const CATEGORIES = ['جنائي', 'مدني'];
 const BATCH = 25; // files per request during bulk upload
-const empty = { title: '', appealNumber: '', year: new Date().getFullYear(), category: 'جنائي', summary: '', pdf: null };
+const empty = { title: '', appealNumber: '', year: new Date().getFullYear(), summary: '', pdf: null };
 
 export default function BooksAdmin() {
-  const [filters, setFilters] = useState({ search: '', category: '', year: '' });
-  const [applied, setApplied] = useState({ search: '', category: '', year: '' });
+  const [filters, setFilters] = useState({ search: '', year: '' });
+  const [applied, setApplied] = useState({ search: '', year: '' });
   const [page, setPage] = useState(1);
   const [state, setState] = useState({ data: [], pagination: null, loading: true });
   const [meta, setMeta] = useState({ categories: [], years: [] });
@@ -28,7 +27,6 @@ export default function BooksAdmin() {
 
   // Bulk upload state
   const [bulkOpen, setBulkOpen] = useState(false);
-  const [bulkCategory, setBulkCategory] = useState('جنائي');
   const [bulkFiles, setBulkFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
@@ -54,7 +52,7 @@ export default function BooksAdmin() {
     setSaving(true);
     try {
       const fd = new FormData();
-      ['title', 'appealNumber', 'year', 'category', 'summary'].forEach((k) => fd.append(k, form[k]));
+      ['title', 'appealNumber', 'year', 'summary'].forEach((k) => fd.append(k, form[k]));
       if (form.pdf instanceof File) fd.append('pdf', form.pdf);
       if (editId) await booksApi.update(editId, fd, true);
       else await booksApi.create(fd, true);
@@ -97,7 +95,6 @@ export default function BooksAdmin() {
       for (let i = 0; i < bulkFiles.length; i += BATCH) {
         const chunk = bulkFiles.slice(i, i + BATCH);
         const fd = new FormData();
-        fd.append('category', bulkCategory);
         chunk.forEach((f) => fd.append('files', f));
         try {
           const res = await booksApi.bulkUpload(fd);
@@ -139,14 +136,10 @@ export default function BooksAdmin() {
         onSubmit={(e) => { e.preventDefault(); setPage(1); setApplied(filters); }}
         className="card mb-5 grid gap-3 p-4 md:grid-cols-4"
       >
-        <div className="relative md:col-span-2">
+        <div className="relative md:col-span-3">
           <FiSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input className="input pr-9" placeholder="بحث بالعنوان أو رقم الطعن" value={filters.search} onChange={(e) => setFilters({ ...filters, search: e.target.value })} />
         </div>
-        <select className="input" value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })}>
-          <option value="">كل التصنيفات</option>
-          {meta.categories.map((c) => <option key={c}>{c}</option>)}
-        </select>
         <div className="flex gap-2">
           <select className="input" value={filters.year} onChange={(e) => setFilters({ ...filters, year: e.target.value })}>
             <option value="">كل السنوات</option>
@@ -165,7 +158,6 @@ export default function BooksAdmin() {
                 <th className="p-3 text-right">العنوان</th>
                 <th className="p-3">رقم الطعن</th>
                 <th className="p-3">السنة</th>
-                <th className="p-3">التصنيف</th>
                 <th className="p-3">إجراءات</th>
               </tr>
             </thead>
@@ -176,7 +168,6 @@ export default function BooksAdmin() {
                   <td className="p-3 font-medium text-slate-800">{b.title}</td>
                   <td className="p-3 text-center text-slate-500">{b.appealNumber}</td>
                   <td className="p-3 text-center text-slate-500">{b.year}</td>
-                  <td className="p-3 text-center"><span className="badge bg-primary-50 text-primary-700">{b.category}</span></td>
                   <td className="p-3">
                     <div className="flex justify-center gap-2">
                       <a href={fileUrl(b.pdf)} target="_blank" rel="noreferrer" className="text-slate-400 hover:text-primary-600"><FiBook /></a>
@@ -195,15 +186,9 @@ export default function BooksAdmin() {
       <Modal open={open} onClose={() => setOpen(false)} title={editId ? 'تعديل كتاب' : 'إضافة كتاب'}>
         <form onSubmit={submit} className="space-y-4">
           <div><label className="label">عنوان الكتاب *</label><input className="input" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div><label className="label">رقم الطعن</label><input className="input" value={form.appealNumber} onChange={(e) => setForm({ ...form, appealNumber: e.target.value })} /></div>
             <div><label className="label">السنة</label><input type="number" className="input" value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} /></div>
-            <div>
-              <label className="label">التصنيف *</label>
-              <select className="input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-                {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
-              </select>
-            </div>
           </div>
           <div><label className="label">ملخص / وصف (اختياري)</label><textarea className="input min-h-20" value={form.summary} onChange={(e) => setForm({ ...form, summary: e.target.value })} /></div>
           <FileInput label="ملف PDF *" value={form.pdf} onChange={(f) => setForm({ ...form, pdf: f })} />
@@ -215,12 +200,6 @@ export default function BooksAdmin() {
       <Modal open={bulkOpen} onClose={() => !uploading && setBulkOpen(false)} title="رفع دفعة من الكتب">
         <div className="space-y-4">
           <div>
-            <label className="label">التصنيف *</label>
-            <select className="input" value={bulkCategory} onChange={(e) => setBulkCategory(e.target.value)} disabled={uploading}>
-              {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
-            </select>
-          </div>
-          <div>
             <label className="label">اختر ملفات PDF (يمكن اختيار عدد كبير مرة واحدة)</label>
             <input
               type="file"
@@ -231,7 +210,7 @@ export default function BooksAdmin() {
               onChange={(e) => setBulkFiles([...e.target.files])}
             />
             {bulkFiles.length > 0 && (
-              <p className="mt-1 text-sm text-slate-500">تم اختيار <span className="font-bold text-slate-700">{bulkFiles.length}</span> ملف — سيُرفع كل ملف باسمه ويُصنّف كـ «{bulkCategory}».</p>
+              <p className="mt-1 text-sm text-slate-500">تم اختيار <span className="font-bold text-slate-700">{bulkFiles.length}</span> ملف — سيُرفع كل ملف باسمه.</p>
             )}
           </div>
 
