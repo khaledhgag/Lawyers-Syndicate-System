@@ -1,4 +1,4 @@
-import { FiPlus, FiUpload } from 'react-icons/fi';
+import { FiPlus, FiUpload, FiX } from 'react-icons/fi';
 import { fileUrl } from '../../api/axios.js';
 
 export function AdminHeader({ title, count, onAdd, addLabel = 'إضافة جديد', children }) {
@@ -21,18 +21,29 @@ export function AdminHeader({ title, count, onAdd, addLabel = 'إضافة جدي
 }
 
 // Single image picker with preview. value can be an existing url or a File.
+// Removing calls onChange('') so forms can send an explicit "clear" signal.
 export function ImageInput({ label = 'الصورة', value, onChange, accept = 'image/*' }) {
   const preview = value instanceof File ? URL.createObjectURL(value) : value ? fileUrl(value) : '';
   return (
     <div>
       <label className="label">{label}</label>
       <div className="flex items-center gap-3">
-        <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+        <div className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
           {preview ? <img src={preview} alt="" className="h-full w-full object-cover" /> : <FiUpload className="text-slate-300" />}
+          {preview && (
+            <button
+              type="button"
+              onClick={() => onChange('')}
+              title="حذف الصورة"
+              className="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white shadow hover:bg-red-700"
+            >
+              <FiX className="h-3 w-3" />
+            </button>
+          )}
         </div>
         <label className="btn-outline cursor-pointer">
-          اختر صورة
-          <input type="file" accept={accept} className="hidden" onChange={(e) => onChange(e.target.files[0])} />
+          {preview ? 'تغيير الصورة' : 'اختر صورة'}
+          <input type="file" accept={accept} className="hidden" onChange={(e) => e.target.files[0] && onChange(e.target.files[0])} />
         </label>
       </div>
     </div>

@@ -26,6 +26,7 @@ export default function BoardMembersAdmin() {
     e.preventDefault();
     const payload = { fullName: form.fullName, position: form.position, bio: form.bio };
     if (form.photo instanceof File) payload.photo = form.photo;
+    else if (form.photo === '') payload.photo = ''; // explicit removal
     if (await save(editId, payload, true)) setOpen(false);
   };
 

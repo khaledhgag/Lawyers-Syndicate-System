@@ -75,24 +75,45 @@ export default function Home() {
         <SectionHeader title="مجلس النقابة" subtitle="أعضاء مجلس النقابة الفرعية" />
         {loading ? (
           <Loader />
-        ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {members.map((m) => (
-              <div key={m._id} className="card p-6 text-center">
-                <div className="mx-auto mb-4 h-28 w-28 overflow-hidden rounded-full bg-primary-50 ring-4 ring-primary-100">
-                  {m.photo ? (
-                    <img src={fileUrl(m.photo)} alt={m.fullName} className="h-full w-full object-cover" />
+        ) : members.length > 0 ? (
+          <>
+            {/* النقيب — featured on top */}
+            <div className="mb-8 flex justify-center">
+              <div className="card w-full max-w-sm border-t-4 border-gold-500 p-8 text-center shadow-card">
+                <div className="mx-auto mb-4 h-36 w-36 overflow-hidden rounded-full bg-primary-50 ring-4 ring-gold-200">
+                  {members[0].photo ? (
+                    <img src={fileUrl(members[0].photo)} alt={members[0].fullName} className="h-full w-full object-cover" />
                   ) : (
-                    <span className="flex h-full w-full items-center justify-center text-3xl text-primary-300">👤</span>
+                    <span className="flex h-full w-full items-center justify-center text-4xl text-primary-300">👤</span>
                   )}
                 </div>
-                <h3 className="text-lg font-bold text-slate-900">{m.fullName}</h3>
-                <p className="mt-1 text-sm font-semibold text-gold-600">{m.position}</p>
-                {m.bio && <p className="mt-2 line-clamp-3 text-sm text-slate-500">{m.bio}</p>}
+                <h3 className="text-xl font-extrabold text-slate-900">{members[0].fullName}</h3>
+                <p className="mt-1 inline-block rounded-full bg-gold-500/10 px-4 py-1 text-sm font-bold text-gold-600">{members[0].position}</p>
+                {members[0].bio && <p className="mt-3 line-clamp-3 text-sm text-slate-500">{members[0].bio}</p>}
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+
+            {/* باقي الأعضاء */}
+            {members.length > 1 && (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {members.slice(1).map((m) => (
+                  <div key={m._id} className="card p-6 text-center">
+                    <div className="mx-auto mb-4 h-28 w-28 overflow-hidden rounded-full bg-primary-50 ring-4 ring-primary-100">
+                      {m.photo ? (
+                        <img src={fileUrl(m.photo)} alt={m.fullName} className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="flex h-full w-full items-center justify-center text-3xl text-primary-300">👤</span>
+                      )}
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900">{m.fullName}</h3>
+                    <p className="mt-1 text-sm font-semibold text-gold-600">{m.position}</p>
+                    {m.bio && <p className="mt-2 line-clamp-3 text-sm text-slate-500">{m.bio}</p>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        ) : null}
       </section>
 
       {/* Location */}

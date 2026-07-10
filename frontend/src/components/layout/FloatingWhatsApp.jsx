@@ -1,30 +1,18 @@
 import { FaWhatsapp } from 'react-icons/fa';
 import { useSettings } from '../../context/SettingsContext.jsx';
-
-// Extract a clean international phone number (digits only) from a raw value
-// that may be a plain number, a wa.me link, or an api.whatsapp.com link.
-const toPhoneDigits = (raw = '') => {
-  const str = String(raw).trim();
-  if (!str) return '';
-  // If it's a wa.me / api.whatsapp.com URL, grab the number part
-  const urlMatch = str.match(/(?:wa\.me\/|phone=)(\+?\d[\d\s-]*)/i);
-  const source = urlMatch ? urlMatch[1] : str;
-  return source.replace(/\D/g, '');
-};
+import { whatsappHref } from '../../utils/whatsapp.js';
 
 export default function FloatingWhatsApp() {
   const { settings } = useSettings();
   const s = settings || {};
 
-  // Prefer the dedicated number field, fall back to the social link
-  const phone = toPhoneDigits(s.whatsappNumber || s.social?.whatsapp);
-  if (!phone) return null;
-
   const message =
     s.whatsappMessage ||
     'السلام عليكم، تواصلت معكم من خلال الموقع الإلكتروني لنقابة محامين جنوب القليوبية 🌐';
 
-  const href = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  // Prefer the dedicated number field, fall back to the social link
+  const href = whatsappHref(s.whatsappNumber || s.social?.whatsapp, message);
+  if (!href) return null;
 
   return (
     <a

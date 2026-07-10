@@ -3,6 +3,7 @@ import { FiPhone, FiMail, FiMapPin, FiClock } from 'react-icons/fi';
 import { FaFacebookF, FaYoutube, FaWhatsapp, FaInstagram, FaTwitter } from 'react-icons/fa';
 import { navItems } from '../../config/nav.js';
 import { useSettings } from '../../context/SettingsContext.jsx';
+import { whatsappHref } from '../../utils/whatsapp.js';
 
 export default function Footer() {
   const { settings } = useSettings();
@@ -15,7 +16,7 @@ export default function Footer() {
     { url: social.twitter, Icon: FaTwitter },
     { url: social.youtube, Icon: FaYoutube },
     { url: social.instagram, Icon: FaInstagram },
-    { url: social.whatsapp, Icon: FaWhatsapp },
+    { url: whatsappHref(social.whatsapp) || social.whatsapp, Icon: FaWhatsapp },
   ].filter((x) => x.url);
 
   return (

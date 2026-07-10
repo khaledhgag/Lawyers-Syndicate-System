@@ -28,6 +28,9 @@ export const update = asyncHandler(async (req, res) => {
   if (req.file) {
     deleteFile(member.photo);
     body.photo = filePublicPath(req.file);
+  } else if (body.photo === '' && member.photo) {
+    // explicit removal of the existing photo
+    deleteFile(member.photo);
   }
   Object.assign(member, body);
   await member.save();
