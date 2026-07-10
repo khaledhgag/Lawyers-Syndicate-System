@@ -26,6 +26,7 @@ export default function OffersAdmin() {
     e.preventDefault();
     const payload = { name: form.name, description: form.description, discount: form.discount, expirationDate: form.expirationDate };
     if (form.image instanceof File) payload.image = form.image;
+    else if (form.image === '') payload.image = ''; // explicit removal
     if (await save(editId, payload, true)) setOpen(false);
   };
 

@@ -1,4 +1,6 @@
 import { useCallback, useState } from 'react';
+import { FiArrowLeft } from 'react-icons/fi';
+import { FaBalanceScale } from 'react-icons/fa';
 import SEO from '../components/ui/SEO.jsx';
 import PageHero from '../components/layout/PageHero.jsx';
 import Loader from '../components/ui/Loader.jsx';
@@ -28,19 +30,35 @@ export default function Services() {
           <EmptyState message="لا توجد خدمات متاحة حالياً" />
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((srv) => (
-              <div key={srv._id} className="card flex flex-col overflow-hidden transition hover:-translate-y-1 hover:shadow-lg">
+            {items.map((srv, i) => (
+              <div
+                key={srv._id}
+                className="group card relative flex flex-col overflow-hidden border-t-4 border-transparent transition hover:-translate-y-1.5 hover:border-gold-500 hover:shadow-xl"
+              >
                 {srv.image ? (
-                  <img src={fileUrl(srv.image)} alt={srv.title} className="h-48 w-full object-cover" />
+                  <div className="relative h-44 w-full overflow-hidden">
+                    <img src={fileUrl(srv.image)} alt={srv.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  </div>
                 ) : (
-                  <div className="flex h-48 items-center justify-center bg-primary-50 text-5xl text-primary-300">⚖</div>
+                  <div className="relative flex h-44 w-full items-center justify-center overflow-hidden bg-gradient-to-br from-primary-800 to-primary-600">
+                    <FaBalanceScale className="text-6xl text-white/15" />
+                    <span className="absolute text-3xl font-extrabold text-gold-300/90">{String(i + 1).padStart(2, '0')}</span>
+                  </div>
                 )}
-                <div className="flex flex-1 flex-col p-5">
+
+                <div className="flex flex-1 flex-col p-6">
+                  <span className="mb-2 inline-flex w-fit items-center gap-1.5 rounded-full bg-gold-500/10 px-3 py-1 text-xs font-bold text-gold-600">
+                    <FaBalanceScale className="h-3 w-3" /> خدمة نقابية
+                  </span>
                   <h3 className="text-lg font-bold text-primary-900">{srv.title}</h3>
-                  <p className="mt-2 flex-1 line-clamp-3 text-sm text-slate-600">{srv.description}</p>
+                  <p className="mt-2 flex-1 text-sm leading-7 text-slate-600 line-clamp-3">{srv.description}</p>
                   {srv.details && (
-                    <button onClick={() => setActive(srv)} className="btn-outline mt-4 w-fit">
-                      التفاصيل
+                    <button
+                      onClick={() => setActive(srv)}
+                      className="mt-4 inline-flex w-fit items-center gap-1 text-sm font-bold text-primary-700 transition group-hover:gap-2 hover:text-gold-600"
+                    >
+                      عرض التفاصيل <FiArrowLeft />
                     </button>
                   )}
                 </div>

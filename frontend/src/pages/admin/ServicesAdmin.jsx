@@ -24,6 +24,7 @@ export default function ServicesAdmin() {
     e.preventDefault();
     const payload = { title: form.title, description: form.description, details: form.details, order: form.order };
     if (form.image instanceof File) payload.image = form.image;
+    else if (form.image === '') payload.image = ''; // explicit removal
     if (await save(editId, payload, true)) setOpen(false);
   };
 
