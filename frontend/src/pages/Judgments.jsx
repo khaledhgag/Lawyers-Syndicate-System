@@ -155,11 +155,15 @@ export default function Judgments() {
               </button>
             </div>
           </div>
-          <iframe
-            title={viewer.title}
-            src={/\.pdf$/i.test(viewer.pdf) ? fileUrl(viewer.pdf) : `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl(viewer.pdf))}`}
-            className="flex-1 rounded-lg bg-white"
-          />
+          {/\.pdf$/i.test(viewer.pdf) ? (
+            <iframe title={viewer.title} src={fileUrl(viewer.pdf)} className="flex-1 rounded-lg bg-white" />
+          ) : (
+            <div className="flex flex-1 flex-col items-center justify-center gap-4 rounded-lg bg-white p-6 text-center">
+              <FiFileText className="h-16 w-16 text-slate-300" />
+              <p className="max-w-md text-slate-600">هذا ملف Word ولا يمكن معاينته داخل المتصفح مباشرة. اضغط بالأسفل لتحميله وفتحه على جهازك.</p>
+              <a href={fileUrl(viewer.pdf)} download className="btn-primary px-6 py-2.5"><FiDownload /> تحميل الملف</a>
+            </div>
+          )}
         </div>
       )}
     </>
