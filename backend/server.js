@@ -115,6 +115,9 @@ app.get('/api/health', (req, res) =>
     success: true,
     message: 'API is running',
     db: mongoose.connection.readyState === 1 ? 'connected' : 'not-connected',
+    cwd: process.cwd(),
+    uploadRoot,
+    uploadEnv: process.env.UPLOAD_DIR || null,
     time: new Date(),
   })
 );
