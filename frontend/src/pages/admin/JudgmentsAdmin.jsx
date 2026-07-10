@@ -11,6 +11,7 @@ import { FileInput } from '../../components/admin/AdminShared.jsx';
 
 const LIMIT = 15;
 const BATCH = 25; // files per request during bulk upload
+const ACCEPT = '.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 const empty = { title: '', appealNumber: '', year: new Date().getFullYear(), summary: '', pdf: null };
 
 export default function JudgmentsAdmin() {
@@ -48,7 +49,7 @@ export default function JudgmentsAdmin() {
 
   const submit = async (e) => {
     e.preventDefault();
-    if (!editId && !(form.pdf instanceof File)) return toast.error('ملف PDF مطلوب');
+    if (!editId && !(form.pdf instanceof File)) return toast.error('الملف مطلوب');
     setSaving(true);
     try {
       const fd = new FormData();
@@ -191,7 +192,7 @@ export default function JudgmentsAdmin() {
             <div><label className="label">السنة</label><input type="number" className="input" value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} /></div>
           </div>
           <div><label className="label">ملخص / مبدأ (اختياري)</label><textarea className="input min-h-20" value={form.summary} onChange={(e) => setForm({ ...form, summary: e.target.value })} /></div>
-          <FileInput label="ملف PDF *" value={form.pdf} onChange={(f) => setForm({ ...form, pdf: f })} />
+          <FileInput label="الملف (PDF أو Word) *" accept={ACCEPT} value={form.pdf} onChange={(f) => setForm({ ...form, pdf: f })} />
           <div className="flex justify-end gap-2"><button type="button" onClick={() => setOpen(false)} className="btn-outline">إلغاء</button><button disabled={saving} className="btn-primary">{saving ? 'جاري الحفظ...' : 'حفظ'}</button></div>
         </form>
       </Modal>
@@ -200,10 +201,10 @@ export default function JudgmentsAdmin() {
       <Modal open={bulkOpen} onClose={() => !uploading && setBulkOpen(false)} title="رفع دفعة من الأحكام">
         <div className="space-y-4">
           <div>
-            <label className="label">اختر ملفات PDF (يمكن اختيار عدد كبير مرة واحدة)</label>
+            <label className="label">اختر ملفات PDF أو Word (يمكن اختيار عدد كبير مرة واحدة)</label>
             <input
               type="file"
-              accept="application/pdf"
+              accept={ACCEPT}
               multiple
               disabled={uploading}
               className="input"

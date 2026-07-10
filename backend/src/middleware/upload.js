@@ -15,16 +15,20 @@ const ensureDir = (dir) => {
 // filename, so an executable (.php/.exe/.sh) can never be written or served.
 const EXT_BY_MIME = {
   'application/pdf': '.pdf',
+  'application/msword': '.doc',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
   'image/jpeg': '.jpg',
   'image/png': '.png',
   'image/webp': '.webp',
   'image/gif': '.gif',
 };
 
+const DOC_MIMES = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // images vs pdfs split by mimetype, subfolder per resource via req.uploadFolder
-    const base = file.mimetype === 'application/pdf' ? 'pdfs' : 'images';
+    // documents (pdf/word) vs images, subfolder per resource via req.uploadFolder
+    const base = DOC_MIMES.includes(file.mimetype) ? 'pdfs' : 'images';
     const folder = req.uploadFolder ? `${base}/${req.uploadFolder}` : base;
     cb(null, ensureDir(folder));
   },

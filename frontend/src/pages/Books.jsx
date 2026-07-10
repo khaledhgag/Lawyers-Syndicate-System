@@ -154,7 +154,11 @@ export default function Books() {
               </button>
             </div>
           </div>
-          <iframe title={viewer.title} src={fileUrl(viewer.pdf)} className="flex-1 rounded-lg bg-white" />
+          <iframe
+            title={viewer.title}
+            src={/\.pdf$/i.test(viewer.pdf) ? fileUrl(viewer.pdf) : `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl(viewer.pdf))}&embedded=true`}
+            className="flex-1 rounded-lg bg-white"
+          />
         </div>
       )}
     </>
