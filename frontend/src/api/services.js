@@ -62,6 +62,16 @@ export const statsApi = {
   get: () => api.get('/stats').then((r) => r.data),
 };
 
+export const backupsApi = {
+  list: () => api.get('/admin/backups').then((r) => r.data),
+  create: () => api.post('/admin/backups/create').then((r) => r.data),
+  progress: () => api.get('/admin/backups/progress').then((r) => r.data),
+  remove: (filename) => api.delete(`/admin/backups/${encodeURIComponent(filename)}`).then((r) => r.data),
+  // Browser download link (auth via query token since <a> can't send headers)
+  downloadUrl: (filename) =>
+    `${import.meta.env.VITE_API_URL || ''}/api/admin/backups/${encodeURIComponent(filename)}?token=${encodeURIComponent(localStorage.getItem('token') || '')}`,
+};
+
 export const authApi = {
   login: (data) => api.post('/auth/login', data).then((r) => r.data),
   me: () => api.get('/auth/me').then((r) => r.data),

@@ -18,3 +18,14 @@ export const uploadRoot = process.env.UPLOAD_DIR
 
 // Make sure the root exists at boot so the first upload never fails.
 if (!fs.existsSync(uploadRoot)) fs.mkdirSync(uploadRoot, { recursive: true });
+
+/**
+ * Where ZIP backups of the uploads folder are stored. Kept OUTSIDE uploadRoot
+ * (a sibling) so backups are never included in their own archive.
+ * Defaults to <parent-of-uploadRoot>/backups; override with BACKUP_DIR.
+ */
+export const backupRoot = process.env.BACKUP_DIR
+  ? path.resolve(process.env.BACKUP_DIR)
+  : path.join(path.dirname(uploadRoot), 'backups');
+
+if (!fs.existsSync(backupRoot)) fs.mkdirSync(backupRoot, { recursive: true });

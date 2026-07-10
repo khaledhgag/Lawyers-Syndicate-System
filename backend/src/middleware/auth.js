@@ -9,6 +9,8 @@ export const protect = async (req, res, next) => {
     if (authHeader && authHeader.startsWith('Bearer ')) {
       token = authHeader.split(' ')[1];
     }
+    // Fallback for browser file downloads that can't send an Authorization header
+    if (!token && req.query.token) token = String(req.query.token);
 
     if (!token) {
       return res.status(401).json({ success: false, message: 'غير مصرح، الرجاء تسجيل الدخول' });

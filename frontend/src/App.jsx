@@ -35,6 +35,7 @@ const GovernmentLinksAdmin = lazy(() => import('./pages/admin/GovernmentLinksAdm
 const ActivitiesAdmin = lazy(() => import('./pages/admin/ActivitiesAdmin.jsx'));
 const ComplaintsAdmin = lazy(() => import('./pages/admin/ComplaintsAdmin.jsx'));
 const SettingsAdmin = lazy(() => import('./pages/admin/SettingsAdmin.jsx'));
+const BackupsAdmin = lazy(() => import('./pages/admin/BackupsAdmin.jsx'));
 
 export default function App() {
   return (
@@ -80,6 +81,7 @@ export default function App() {
           <Route path="activities" element={<ActivitiesAdmin />} />
           <Route path="complaints" element={<ComplaintsAdmin />} />
           <Route path="settings" element={<SettingsAdmin />} />
+          <Route path="backups" element={<BackupsAdmin />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

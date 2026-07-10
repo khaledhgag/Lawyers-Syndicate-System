@@ -29,6 +29,7 @@ import complaintRoutes from './src/routes/complaint.routes.js';
 import settingsRoutes from './src/routes/settings.routes.js';
 import statsRoutes from './src/routes/stats.routes.js';
 import courtRoutes from './src/routes/court.routes.js';
+import backupRoutes from './src/routes/backup.routes.js';
 
 // --- Global safety nets ---------------------------------------------------
 // Log fatal async errors but keep the HTTP server alive. A background failure
@@ -134,6 +135,7 @@ app.use('/api/complaints', complaintRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/courts', courtRoutes);
+app.use('/api/admin/backups', backupRoutes);
 
 // Errors
 app.use(notFound);

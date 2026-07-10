@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
 import {
   FiGrid, FiUsers, FiBriefcase, FiTag, FiBookOpen, FiFileText, FiBook,
-  FiLink, FiActivity, FiInbox, FiSettings, FiLogOut, FiMenu, FiX, FiExternalLink, FiMapPin,
+  FiLink, FiActivity, FiInbox, FiSettings, FiLogOut, FiMenu, FiX, FiExternalLink, FiMapPin, FiDatabase,
 } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext.jsx';
 
@@ -20,6 +20,7 @@ const links = [
   { to: '/admin/activities', label: 'الأنشطة', Icon: FiActivity },
   { to: '/admin/complaints', label: 'الشكاوى والطلبات', Icon: FiInbox },
   { to: '/admin/settings', label: 'إعدادات الموقع', Icon: FiSettings },
+  { to: '/admin/backups', label: 'النسخ الاحتياطية', Icon: FiDatabase, superadmin: true },
 ];
 
 export default function AdminLayout() {
@@ -44,7 +45,7 @@ export default function AdminLayout() {
         <span className="text-sm font-bold text-white">لوحة التحكم</span>
       </div>
       <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-        {links.map((l) => (
+        {links.filter((l) => !l.superadmin || admin?.role === 'superadmin').map((l) => (
           <NavLink key={l.to} to={l.to} end={l.end} className={linkClass} onClick={() => setOpen(false)}>
             <l.Icon className="h-5 w-5 shrink-0" /> {l.label}
           </NavLink>
