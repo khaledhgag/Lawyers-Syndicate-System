@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react';
-import { FiCalendar } from 'react-icons/fi';
+import { useCallback, useMemo, useState } from 'react';
+import { FiCalendar, FiClock } from 'react-icons/fi';
 import SEO from '../components/ui/SEO.jsx';
 import PageHero from '../components/layout/PageHero.jsx';
 import Loader from '../components/ui/Loader.jsx';
@@ -12,6 +12,7 @@ import { formatDate } from '../utils/format.js';
 
 export default function Activities() {
   const [tab, setTab] = useState(''); // '' = all
+  const [sort, setSort] = useState('newest');
   const [lightbox, setLightbox] = useState(null);
 
   const fetcher = useCallback(() => activitiesApi.list(), []);
@@ -20,7 +21,14 @@ export default function Activities() {
 
   // Categories derived from the data itself
   const categories = [...new Set(all.map((a) => a.type).filter(Boolean))];
-  const items = tab ? all.filter((a) => a.type === tab) : all;
+  const items = useMemo(() => {
+    const filtered = tab ? all.filter((a) => a.type === tab) : all;
+    return [...filtered].sort((a, b) => {
+      const first = new Date(a.createdAt || a.date || 0).getTime();
+      const second = new Date(b.createdAt || b.date || 0).getTime();
+      return sort === 'oldest' ? first - second : second - first;
+    });
+  }, [all, tab, sort]);
 
   return (
     <>
@@ -29,7 +37,7 @@ export default function Activities() {
       <div className="container-page py-12">
         {/* Tabs — dynamic from categories */}
         {categories.length > 0 && (
-          <div className="mb-8 flex flex-wrap justify-center gap-2">
+          <div className="mb-6 flex flex-wrap justify-center gap-2">
             <button
               onClick={() => setTab('')}
               className={`rounded-full px-6 py-2.5 text-sm font-semibold transition ${
@@ -52,6 +60,14 @@ export default function Activities() {
           </div>
         )}
 
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-white p-4 shadow-sm">
+          <p className="text-sm font-semibold text-slate-700">ترتيب الأنشطة حسب تاريخ الإضافة</p>
+          <select className="input max-w-xs" value={sort} onChange={(e) => setSort(e.target.value)}>
+            <option value="newest">الأحدث للأقدم</option>
+            <option value="oldest">الأقدم للأحدث</option>
+          </select>
+        </div>
+
         {loading ? (
           <Loader />
         ) : error ? (
@@ -68,6 +84,9 @@ export default function Activities() {
                     <FiCalendar /> {formatDate(a.date)}
                   </span>
                 </div>
+                <p className="mb-3 flex items-center gap-1 text-xs text-slate-400">
+                  <FiClock /> تاريخ الإضافة: {formatDate(a.createdAt)}
+                </p>
                 <p className="leading-8 text-slate-600">{a.description}</p>
                 {a.gallery?.length > 0 && (
                   <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">

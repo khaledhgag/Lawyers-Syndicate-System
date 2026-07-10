@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { FiSearch, FiTrash2, FiEye, FiPaperclip } from 'react-icons/fi';
+import { FiSearch, FiTrash2, FiEye, FiPaperclip, FiPrinter, FiDownload } from 'react-icons/fi';
 import { complaintsApi } from '../../api/services.js';
 import { fileUrl } from '../../api/axios.js';
 import Loader from '../../components/ui/Loader.jsx';
@@ -43,7 +43,31 @@ export default function ComplaintsAdmin() {
   const saveNotes = async () => {
     await complaintsApi.update(active._id, { adminNotes: notes });
     toast.success('تم حفظ الملاحظات');
+    setActive({ ...active, adminNotes: notes });
     load();
+  };
+
+  const printReceipt = () => {
+    if (!active) return;
+    const win = window.open('', '_blank', 'width=900,height=700');
+    if (!win) return;
+    win.document.write(buildReceiptHtml(active, notes));
+    win.document.close();
+    win.focus();
+    win.print();
+  };
+
+  const downloadReceipt = () => {
+    if (!active) return;
+    const blob = new Blob([buildReceiptHtml(active, notes)], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `complaint-${active.ticketNumber || active._id}.html`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
   };
 
   const removeOne = async (id) => {
@@ -121,6 +145,48 @@ export default function ComplaintsAdmin() {
       <Modal open={!!active} onClose={() => setActive(null)} title="تفاصيل الطلب" size="lg">
         {active && (
           <div className="space-y-3 text-sm">
+            <div className="flex flex-wrap justify-end gap-2">
+              <button onClick={printReceipt} className="btn-outline">
+                <FiPrinter /> طباعة الإيصال
+              </button>
+              <button onClick={downloadReceipt} className="btn-primary">
+                <FiDownload /> تحميل الإيصال
+              </button>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="mb-4 flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
+                <div>
+                  <p className="text-xs text-slate-400">إيصال شكوى / طلب</p>
+                  <h3 className="mt-1 text-xl font-bold text-primary-900">{active.subject}</h3>
+                </div>
+                <div className="text-left">
+                  <p className="text-xs text-slate-400">الرقم المرجعي</p>
+                  <p className="font-mono text-lg font-bold text-primary-700" dir="ltr">{active.ticketNumber || '—'}</p>
+                </div>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <ReceiptField label="مقدم الطلب" value={active.fullName} />
+                <ReceiptField label="نوع الطلب" value={active.requestType} />
+                <ReceiptField label="الحالة" value={active.status} />
+                <ReceiptField label="تاريخ الإرسال" value={formatDateTime(active.createdAt)} />
+                <ReceiptField label="رقم القيد" value={active.membershipNumber} />
+                <ReceiptField label="الجزئية" value={active.center} />
+                <ReceiptField label="رقم الهاتف" value={active.phone} />
+                <ReceiptField label="الرغبة في التواصل" value={active.wantsContact ? 'نعم' : 'لا'} />
+              </div>
+              <div className="mt-4">
+                <p className="text-xs text-slate-400">تفاصيل الشكوى</p>
+                <p className="mt-1 whitespace-pre-line rounded-lg bg-slate-50 p-3 leading-7 text-slate-700">{active.details}</p>
+              </div>
+              {notes && (
+                <div className="mt-4">
+                  <p className="text-xs text-slate-400">ملاحظات الإدارة</p>
+                  <p className="mt-1 whitespace-pre-line rounded-lg bg-primary-50 p-3 leading-7 text-primary-900">{notes}</p>
+                </div>
+              )}
+            </div>
+
             <div className="grid grid-cols-2 gap-3">
               <Field label="نوع الطلب" value={active.requestType} />
               <Field label="الحالة" value={active.status} />
@@ -162,6 +228,95 @@ export default function ComplaintsAdmin() {
 const Field = ({ label, value }) => (
   <div>
     <p className="text-xs text-slate-400">{label}</p>
-    <p className="font-semibold text-slate-700">{value}</p>
+    <p className="font-semibold text-slate-700">{value || '—'}</p>
   </div>
 );
+
+const ReceiptField = ({ label, value }) => (
+  <div className="rounded-lg bg-slate-50 p-3">
+    <p className="text-xs text-slate-400">{label}</p>
+    <p className="mt-1 font-semibold text-slate-800">{value || '—'}</p>
+  </div>
+);
+
+const escapeHtml = (value = '') =>
+  String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+
+const buildReceiptHtml = (item, adminNotes = '') => {
+  const field = (label, value) => `
+    <div class="field">
+      <span>${escapeHtml(label)}</span>
+      <strong>${escapeHtml(value || '—')}</strong>
+    </div>
+  `;
+
+  return `<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <title>إيصال شكوى ${escapeHtml(item.ticketNumber || '')}</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f8fafc; color: #0f172a; font-family: Tahoma, Arial, sans-serif; }
+    .page { width: min(840px, 100%); margin: 24px auto; background: #fff; border: 1px solid #e2e8f0; padding: 32px; }
+    .header { display: flex; justify-content: space-between; gap: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; }
+    .muted { color: #64748b; font-size: 13px; }
+    h1 { margin: 6px 0 0; font-size: 26px; color: #123c69; }
+    .ticket { text-align: left; }
+    .ticket strong { display: block; color: #123c69; direction: ltr; font-size: 22px; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 22px; }
+    .field { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; }
+    .field span { display: block; color: #64748b; font-size: 12px; margin-bottom: 6px; }
+    .field strong { font-size: 15px; }
+    .section { margin-top: 22px; }
+    .box { white-space: pre-line; line-height: 1.9; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; background: #fff; }
+    .footer { margin-top: 28px; display: flex; justify-content: space-between; color: #64748b; font-size: 12px; border-top: 1px solid #e2e8f0; padding-top: 16px; }
+    @media print {
+      body { background: #fff; }
+      .page { margin: 0; width: 100%; border: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="header">
+      <div>
+        <p class="muted">نقابة المحامين - إيصال شكوى / طلب</p>
+        <h1>${escapeHtml(item.subject)}</h1>
+      </div>
+      <div class="ticket">
+        <span class="muted">الرقم المرجعي</span>
+        <strong>${escapeHtml(item.ticketNumber || '—')}</strong>
+      </div>
+    </header>
+    <section class="grid">
+      ${field('مقدم الطلب', item.fullName)}
+      ${field('نوع الطلب', item.requestType)}
+      ${field('الحالة', item.status)}
+      ${field('تاريخ الإرسال', formatDateTime(item.createdAt))}
+      ${field('رقم القيد', item.membershipNumber)}
+      ${field('الجزئية', item.center)}
+      ${field('رقم الهاتف', item.phone)}
+      ${field('الرغبة في التواصل', item.wantsContact ? 'نعم' : 'لا')}
+    </section>
+    <section class="section">
+      <p class="muted">تفاصيل الشكوى</p>
+      <div class="box">${escapeHtml(item.details)}</div>
+    </section>
+    <section class="section">
+      <p class="muted">ملاحظات الإدارة</p>
+      <div class="box">${escapeHtml(adminNotes || item.adminNotes || '—')}</div>
+    </section>
+    <footer class="footer">
+      <span>تم إنشاء الإيصال من لوحة الإدارة</span>
+      <span>${escapeHtml(formatDateTime(new Date()))}</span>
+    </footer>
+  </main>
+</body>
+</html>`;
+};
