@@ -95,7 +95,18 @@ app.use('/api', apiLimiter);
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 30 });
 
 // Static uploads (long cache — filenames are unique/immutable)
-app.use('/uploads', express.static(uploadRoot, { maxAge: '7d', etag: true }));
+// Allow files (PDF/images) to be embedded in an <iframe> on the frontend by
+// dropping the X-Frame-Options header that helmet sets for other responses.
+app.use(
+  '/uploads',
+  express.static(uploadRoot, {
+    maxAge: '7d',
+    etag: true,
+    setHeaders: (res) => {
+      res.removeHeader('X-Frame-Options');
+    },
+  })
+);
 
 // Health — registered BEFORE the database connects, so it always responds 200
 // even while MongoDB is still connecting or unavailable.
