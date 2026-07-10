@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { FiCalendar, FiImage } from 'react-icons/fi';
+import { FiCalendar } from 'react-icons/fi';
 import SEO from '../components/ui/SEO.jsx';
 import PageHero from '../components/layout/PageHero.jsx';
 import Loader from '../components/ui/Loader.jsx';
@@ -10,38 +10,47 @@ import { fileUrl } from '../api/axios.js';
 import useFetch from '../hooks/useFetch.js';
 import { formatDate } from '../utils/format.js';
 
-const TABS = [
-  { key: 'رحلات', label: 'رحلات النقابة' },
-  { key: 'اجتماعية', label: 'الأنشطة الاجتماعية' },
-];
-
 export default function Activities() {
-  const [tab, setTab] = useState('رحلات');
+  const [tab, setTab] = useState(''); // '' = all
   const [lightbox, setLightbox] = useState(null);
 
-  const fetcher = useCallback(() => activitiesApi.list({ type: tab }), [tab]);
-  const { data, loading, error, refetch } = useFetch(fetcher, [tab]);
-  const items = data?.data || [];
+  const fetcher = useCallback(() => activitiesApi.list(), []);
+  const { data, loading, error, refetch } = useFetch(fetcher);
+  const all = data?.data || [];
+
+  // Categories derived from the data itself
+  const categories = [...new Set(all.map((a) => a.type).filter(Boolean))];
+  const items = tab ? all.filter((a) => a.type === tab) : all;
 
   return (
     <>
       <SEO title="أنشطة النقابة" />
-      <PageHero title="أنشطة النقابة" subtitle="رحلات وأنشطة اجتماعية للسادة المحامين" />
+      <PageHero title="أنشطة النقابة" subtitle="أنشطة ورحلات وفعاليات النقابة للسادة المحامين" />
       <div className="container-page py-12">
-        {/* Tabs */}
-        <div className="mb-8 flex justify-center gap-2">
-          {TABS.map((t) => (
+        {/* Tabs — dynamic from categories */}
+        {categories.length > 0 && (
+          <div className="mb-8 flex flex-wrap justify-center gap-2">
             <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
+              onClick={() => setTab('')}
               className={`rounded-full px-6 py-2.5 text-sm font-semibold transition ${
-                tab === t.key ? 'bg-primary-700 text-white shadow' : 'bg-white text-slate-600 hover:bg-slate-100'
+                tab === '' ? 'bg-primary-700 text-white shadow' : 'bg-white text-slate-600 hover:bg-slate-100'
               }`}
             >
-              {t.label}
+              الكل
             </button>
-          ))}
-        </div>
+            {categories.map((c) => (
+              <button
+                key={c}
+                onClick={() => setTab(c)}
+                className={`rounded-full px-6 py-2.5 text-sm font-semibold transition ${
+                  tab === c ? 'bg-primary-700 text-white shadow' : 'bg-white text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        )}
 
         {loading ? (
           <Loader />

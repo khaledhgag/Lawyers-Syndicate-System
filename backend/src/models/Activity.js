@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
-export const ACTIVITY_TYPES = ['رحلات', 'اجتماعية'];
+// Default suggestions only — admins may add any category freely.
+export const ACTIVITY_TYPES = ['رحلات النقابة', 'الأنشطة الاجتماعية'];
 
 const activitySchema = new mongoose.Schema(
   {
@@ -9,8 +10,8 @@ const activitySchema = new mongoose.Schema(
     date: { type: Date, required: [true, 'التاريخ مطلوب'] },
     type: {
       type: String,
-      enum: { values: ACTIVITY_TYPES, message: 'نوع النشاط غير صالح' },
       required: [true, 'نوع النشاط مطلوب'],
+      trim: true,
     },
     gallery: [{ type: String }],
     isActive: { type: Boolean, default: true },

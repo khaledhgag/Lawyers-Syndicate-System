@@ -11,7 +11,7 @@ import Modal from '../../components/ui/Modal.jsx';
 import { AdminHeader } from '../../components/admin/AdminShared.jsx';
 import { formatDate } from '../../utils/format.js';
 
-const empty = { title: '', description: '', date: '', type: 'رحلات' };
+const empty = { title: '', description: '', date: '', type: '' };
 const toDateInput = (d) => (d ? new Date(d).toISOString().slice(0, 10) : '');
 
 export default function ActivitiesAdmin() {
@@ -85,11 +85,20 @@ export default function ActivitiesAdmin() {
           <div className="grid grid-cols-2 gap-3">
             <div><label className="label">العنوان *</label><input className="input" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
             <div>
-              <label className="label">النوع *</label>
-              <select className="input" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
-                <option value="رحلات">رحلات النقابة</option>
-                <option value="اجتماعية">الأنشطة الاجتماعية</option>
-              </select>
+              <label className="label">التصنيف *</label>
+              <input
+                className="input"
+                required
+                list="activity-types"
+                placeholder="اكتب تصنيفاً جديداً أو اختر موجوداً"
+                value={form.type}
+                onChange={(e) => setForm({ ...form, type: e.target.value })}
+              />
+              <datalist id="activity-types">
+                {[...new Set(['رحلات النقابة', 'الأنشطة الاجتماعية', ...items.map((a) => a.type)])].filter(Boolean).map((t) => (
+                  <option key={t} value={t} />
+                ))}
+              </datalist>
             </div>
           </div>
           <div><label className="label">التاريخ *</label><input type="date" className="input" required value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} /></div>
