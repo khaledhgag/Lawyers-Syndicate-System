@@ -1,6 +1,7 @@
 import Book from '../models/Book.js';
 import { asyncHandler } from '../middleware/error.js';
 import { filePublicPath, deleteFile } from '../utils/fileHelper.js';
+import { buildSearchFilter } from '../utils/search.js';
 
 // @desc List books with pagination/search/filter (optimized for large datasets)
 // @route GET /api/books
@@ -15,22 +16,13 @@ export const getAll = asyncHandler(async (req, res) => {
   if (year) filter.year = Number(year);
   if (appealNumber) filter.appealNumber = { $regex: appealNumber.trim(), $options: 'i' };
 
-  let query;
-  let sort = { createdAt: -1 };
-
-  if (search && search.trim()) {
-    const term = search.trim();
-    // Use text index for performance; fallback regex on title if needed
-    filter.$text = { $search: term };
-    query = Book.find(filter, { score: { $meta: 'textScore' } });
-    sort = { score: { $meta: 'textScore' } };
-  } else {
-    query = Book.find(filter);
-  }
+  // Approximate (typo/variant-tolerant) Arabic search across title/appeal/summary
+  const searchClause = buildSearchFilter(search);
+  if (searchClause) Object.assign(filter, searchClause);
 
   // lean() for read performance, run count + data in parallel
   const [data, total] = await Promise.all([
-    query.sort(sort).skip(skip).limit(limit).lean(),
+    Book.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
     Book.countDocuments(filter),
   ]);
 
