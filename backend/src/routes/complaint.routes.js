@@ -8,6 +8,9 @@ const router = express.Router();
 // Public submission
 router.post('/', setUploadFolder('complaints'), upload.single('attachment'), ctrl.create);
 
+// Public tracking by ticket number
+router.get('/track/:ticket', ctrl.track);
+
 // Admin
 router.get('/', protect, ctrl.getAll);
 router.get('/:id', protect, ctrl.getOne);

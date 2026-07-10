@@ -46,7 +46,10 @@ export const courtsApi = {
 };
 export const governmentLinksApi = resource('/government-links');
 export const activitiesApi = resource('/activities');
-export const complaintsApi = resource('/complaints');
+export const complaintsApi = {
+  ...resource('/complaints'),
+  track: (ticket) => api.get(`/complaints/track/${encodeURIComponent(ticket)}`).then((r) => r.data),
+};
 
 export const settingsApi = {
   get: () => api.get('/settings').then((r) => r.data),

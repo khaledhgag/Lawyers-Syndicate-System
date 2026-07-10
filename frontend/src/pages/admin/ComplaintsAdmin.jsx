@@ -82,6 +82,7 @@ export default function ComplaintsAdmin() {
           <table className="w-full min-w-[800px] text-sm">
             <thead className="bg-slate-50 text-slate-500">
               <tr>
+                <th className="p-3">الرقم المرجعي</th>
                 <th className="p-3 text-right">العنوان</th>
                 <th className="p-3">النوع</th>
                 <th className="p-3">مقدم الطلب</th>
@@ -93,6 +94,7 @@ export default function ComplaintsAdmin() {
             <tbody className="divide-y divide-slate-100">
               {data.map((c) => (
                 <tr key={c._id} className="hover:bg-slate-50">
+                  <td className="p-3 text-center font-mono text-xs text-primary-700" dir="ltr">{c.ticketNumber || '—'}</td>
                   <td className="p-3 font-medium text-slate-800">{c.subject}{c.attachment && <FiPaperclip className="mr-1 inline text-slate-400" />}</td>
                   <td className="p-3 text-center text-slate-500">{c.requestType}</td>
                   <td className="p-3 text-center text-slate-500">{c.fullName}</td>

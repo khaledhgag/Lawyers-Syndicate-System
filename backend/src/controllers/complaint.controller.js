@@ -1,4 +1,5 @@
 import Complaint, { COMPLAINT_STATUSES } from '../models/Complaint.js';
+import Counter from '../models/Counter.js';
 import { asyncHandler } from '../middleware/error.js';
 import { filePublicPath, deleteFile } from '../utils/fileHelper.js';
 
@@ -13,8 +14,39 @@ export const create = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: 'يجب الموافقة على الشروط قبل الإرسال' });
   }
   if (req.file) body.attachment = filePublicPath(req.file);
+
+  // Human-readable tracking number: SQ-YYYY-NNNNN
+  const year = new Date().getFullYear();
+  const seq = await Counter.next(`complaint-${year}`);
+  body.ticketNumber = `SQ-${year}-${String(seq).padStart(5, '0')}`;
+
   const item = await Complaint.create(body);
-  res.status(201).json({ success: true, message: 'تم إرسال طلبك بنجاح وسيتم مراجعته', data: { id: item._id } });
+  res.status(201).json({
+    success: true,
+    message: 'تم إرسال طلبك بنجاح وسيتم مراجعته',
+    data: { id: item._id, ticketNumber: item.ticketNumber },
+  });
+});
+
+// @desc Public: track a request by its ticket number
+// @route GET /api/complaints/track/:ticket
+export const track = asyncHandler(async (req, res) => {
+  const ticket = String(req.params.ticket || '').trim().toUpperCase();
+  const item = await Complaint.findOne({ ticketNumber: ticket }).lean();
+  if (!item) return res.status(404).json({ success: false, message: 'لا يوجد طلب بهذا الرقم المرجعي' });
+  res.json({
+    success: true,
+    data: {
+      ticketNumber: item.ticketNumber,
+      fullName: item.fullName,
+      requestType: item.requestType,
+      subject: item.subject,
+      status: item.status,
+      adminNotes: item.adminNotes || '',
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    },
+  });
 });
 
 // @desc Admin: list complaints with filter + pagination
@@ -30,6 +62,7 @@ export const getAll = asyncHandler(async (req, res) => {
   if (req.query.search) {
     const t = req.query.search.trim();
     filter.$or = [
+      { ticketNumber: { $regex: t, $options: 'i' } },
       { fullName: { $regex: t, $options: 'i' } },
       { membershipNumber: { $regex: t, $options: 'i' } },
       { subject: { $regex: t, $options: 'i' } },
