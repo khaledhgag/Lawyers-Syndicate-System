@@ -19,6 +19,7 @@ export const judgmentsApi = {
   ...resource('/judgments'),
   meta: () => api.get('/judgments/meta').then((r) => r.data),
   bulkDelete: (ids) => api.post('/judgments/bulk-delete', { ids }).then((r) => r.data),
+  deleteAll: () => api.post('/judgments/delete-all').then((r) => r.data),
   bulkUpload: (formData, onProgress) =>
     api
       .post('/judgments/bulk', formData, {
@@ -31,6 +32,7 @@ export const booksApi = {
   ...resource('/books'),
   meta: () => api.get('/books/meta').then((r) => r.data),
   bulkDelete: (ids) => api.post('/books/bulk-delete', { ids }).then((r) => r.data),
+  deleteAll: () => api.post('/books/delete-all').then((r) => r.data),
   bulkUpload: (formData, onProgress) =>
     api
       .post('/books/bulk', formData, {

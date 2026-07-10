@@ -122,6 +122,15 @@ export const bulkCreate = asyncHandler(async (req, res) => {
   res.status(201).json({ success: true, message: `تم رفع ${inserted.length} حكم`, count: inserted.length });
 });
 
+// @desc Delete ALL judgments and their files
+// @route POST /api/judgments/delete-all
+export const removeAll = asyncHandler(async (req, res) => {
+  const items = await Judgment.find({}, 'pdf').lean();
+  items.forEach((i) => deleteFile(i.pdf));
+  const result = await Judgment.deleteMany({});
+  res.json({ success: true, message: `تم حذف كل الأحكام (${result.deletedCount})`, count: result.deletedCount });
+});
+
 // @desc Bulk delete
 // @route POST /api/judgments/bulk-delete
 export const bulkRemove = asyncHandler(async (req, res) => {

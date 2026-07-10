@@ -11,6 +11,7 @@ router.get('/:id', ctrl.getOne);
 router.post('/', protect, setUploadFolder('judgments'), upload.single('pdf'), ctrl.create);
 router.post('/bulk', protect, setUploadFolder('judgments'), upload.array('files', 500), ctrl.bulkCreate);
 router.post('/bulk-delete', protect, ctrl.bulkRemove);
+router.post('/delete-all', protect, ctrl.removeAll);
 router.put('/:id', protect, setUploadFolder('judgments'), upload.single('pdf'), ctrl.update);
 router.delete('/:id', protect, ctrl.remove);
 

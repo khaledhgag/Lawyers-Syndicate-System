@@ -83,6 +83,24 @@ export default function JudgmentsAdmin() {
     load();
   };
 
+  const deleteAll = async () => {
+    const total = pagination?.total || 0;
+    if (!total) return toast.error('لا توجد عناصر للحذف');
+    if (!window.confirm(`⚠️ سيتم حذف كل الأحكام (${total.toLocaleString('ar-EG')}) نهائياً مع ملفاتها. لا يمكن التراجع. هل أنت متأكد؟`)) return;
+    const typed = window.prompt('للتأكيد النهائي اكتب: حذف الكل');
+    if (typed !== 'حذف الكل') return toast.error('تم الإلغاء — النص غير مطابق');
+    try {
+      const res = await judgmentsApi.deleteAll();
+      toast.success(res.message || 'تم حذف الكل');
+      setSelected([]);
+      setPage(1);
+      load();
+      judgmentsApi.meta().then(setMeta).catch(() => {});
+    } catch (e) {
+      toast.error(e?.response?.data?.message || 'تعذر الحذف');
+    }
+  };
+
   const toggle = (id) => setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
 
   // Upload many PDFs in batches to avoid huge single requests
@@ -126,6 +144,9 @@ export default function JudgmentsAdmin() {
         <div className="flex gap-2">
           {selected.length > 0 && (
             <button onClick={bulkDelete} className="btn-danger px-4 py-2"><FiTrash2 /> حذف المحدد ({selected.length})</button>
+          )}
+          {pagination?.total > 0 && (
+            <button onClick={deleteAll} className="btn-danger px-4 py-2"><FiTrash2 /> حذف الكل</button>
           )}
           <button onClick={() => { setBulkFiles([]); setBulkOpen(true); }} className="btn-gold px-4 py-2"><FiUploadCloud /> رفع دفعة</button>
           <button onClick={openNew} className="btn-primary px-4 py-2"><FiPlus /> إضافة حكم</button>
