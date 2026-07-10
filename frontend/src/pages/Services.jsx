@@ -30,7 +30,7 @@ export default function Services() {
           <EmptyState message="لا توجد خدمات متاحة حالياً" />
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((srv, i) => (
+            {items.map((srv) => (
               <div
                 key={srv._id}
                 className="group card relative flex flex-col overflow-hidden border-t-4 border-transparent transition hover:-translate-y-1.5 hover:border-gold-500 hover:shadow-xl"
@@ -42,8 +42,7 @@ export default function Services() {
                   </div>
                 ) : (
                   <div className="relative flex h-44 w-full items-center justify-center overflow-hidden bg-gradient-to-br from-primary-800 to-primary-600">
-                    <FaBalanceScale className="text-6xl text-white/15" />
-                    <span className="absolute text-3xl font-extrabold text-gold-300/90">{String(i + 1).padStart(2, '0')}</span>
+                    <FaBalanceScale className="text-6xl text-gold-300/40" />
                   </div>
                 )}
 
