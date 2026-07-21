@@ -5,6 +5,15 @@ import { useSettings } from '../../context/SettingsContext.jsx';
 import Loader from '../../components/ui/Loader.jsx';
 import { ImageInput } from '../../components/admin/AdminShared.jsx';
 
+const SOCIAL_FIELDS = [
+  { key: 'facebook', label: 'Facebook' },
+  { key: 'twitter', label: 'X / Twitter' },
+  { key: 'youtube', label: 'YouTube' },
+  { key: 'instagram', label: 'Instagram' },
+  { key: 'whatsapp', label: 'WhatsApp' },
+  { key: 'telegram', label: 'Telegram' },
+];
+
 export default function SettingsAdmin() {
   const { refresh } = useSettings();
   const [form, setForm] = useState(null);
@@ -28,10 +37,16 @@ export default function SettingsAdmin() {
       const fd = new FormData();
       ['unionName', 'aboutTitle', 'aboutText', 'address', 'googleMapsLink', 'googleMapsEmbed', 'phone', 'email', 'workingHours', 'whatsappNumber', 'whatsappMessage'].forEach((k) => fd.append(k, form[k] || ''));
       Object.entries(form.social || {}).forEach(([k, v]) => fd.append(`social.${k}`, v || ''));
-      if (logo) fd.append('logo', logo);
-      if (banner) fd.append('banner', banner);
+      if (logo instanceof File) fd.append('logo', logo);
+      else if (logo === '') fd.append('logo', '');
+      if (banner instanceof File) fd.append('banner', banner);
+      else if (banner === '') fd.append('banner', '');
       await settingsApi.update(fd);
       toast.success('تم حفظ الإعدادات');
+      const updated = await settingsApi.get();
+      setForm(updated.data);
+      setLogo(null);
+      setBanner(null);
       refresh();
     } catch (err) {
       toast.error(err?.response?.data?.message || 'تعذر الحفظ');
@@ -47,8 +62,8 @@ export default function SettingsAdmin() {
         <div className="card p-5">
           <h2 className="mb-4 font-bold text-slate-800">معلومات عامة</h2>
           <div className="grid gap-4 md:grid-cols-2">
-            <ImageInput label="شعار النقابة" value={logo || form.logo} onChange={setLogo} />
-            <ImageInput label="صورة البانر الرئيسية" value={banner || form.banner} onChange={setBanner} />
+            <ImageInput label="شعار النقابة" value={logo !== null ? logo : form.logo} onChange={setLogo} />
+            <ImageInput label="صورة البانر الرئيسية" value={banner !== null ? banner : form.banner} onChange={setBanner} />
             <div className="md:col-span-2"><label className="label">اسم النقابة</label><input className="input" value={form.unionName} onChange={set('unionName')} /></div>
             <div><label className="label">عنوان قسم "عن النقابة"</label><input className="input" value={form.aboutTitle} onChange={set('aboutTitle')} /></div>
             <div className="md:col-span-2"><label className="label">نص "عن النقابة"</label><textarea className="input min-h-28" value={form.aboutText} onChange={set('aboutText')} /></div>
@@ -86,8 +101,17 @@ export default function SettingsAdmin() {
         <div className="card p-5">
           <h2 className="mb-4 font-bold text-slate-800">روابط التواصل الاجتماعي</h2>
           <div className="grid gap-4 md:grid-cols-2">
-            {['facebook', 'twitter', 'youtube', 'instagram', 'whatsapp'].map((k) => (
-              <div key={k}><label className="label capitalize">{k}</label><input className="input" value={form.social?.[k] || ''} onChange={setSocial(k)} /></div>
+            {SOCIAL_FIELDS.map(({ key, label }) => (
+              <div key={key}>
+                <label className="label">{label}</label>
+                <input
+                  className="input"
+                  dir="ltr"
+                  placeholder={key === 'twitter' ? 'https://x.com/...' : key === 'telegram' ? 'https://t.me/...' : 'https://...'}
+                  value={form.social?.[key] || ''}
+                  onChange={setSocial(key)}
+                />
+              </div>
             ))}
           </div>
         </div>

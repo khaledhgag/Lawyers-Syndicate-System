@@ -32,10 +32,16 @@ export const updateSettings = asyncHandler(async (req, res) => {
   if (req.files?.logo) {
     deleteFile(settings.logo);
     body.logo = filePublicPath(req.files.logo[0]);
+  } else if (body.logo === '') {
+    deleteFile(settings.logo);
+    body.logo = '';
   }
   if (req.files?.banner) {
     deleteFile(settings.banner);
     body.banner = filePublicPath(req.files.banner[0]);
+  } else if (body.banner === '') {
+    deleteFile(settings.banner);
+    body.banner = '';
   }
 
   Object.assign(settings, body);

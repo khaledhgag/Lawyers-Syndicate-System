@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 import SEO from '../components/ui/SEO.jsx';
 import PageHero from '../components/layout/PageHero.jsx';
@@ -15,6 +15,10 @@ import useFetch from '../hooks/useFetch.js';
 function SiteLogo({ link }) {
   const [failed, setFailed] = useState(false);
   const src = link.icon ? fileUrl(link.icon) : faviconUrl(link.url);
+  useEffect(() => {
+    setFailed(false);
+  }, [src]);
+
   if (failed || !src) {
     return <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-2xl">🏛️</span>;
   }

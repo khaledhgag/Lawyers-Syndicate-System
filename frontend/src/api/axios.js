@@ -28,7 +28,7 @@ api.interceptors.response.use(
 // Helper to resolve uploaded file urls
 export const fileUrl = (p) => {
   if (!p) return '';
-  if (p.startsWith('http')) return p;
+  if (p.startsWith('http') || p.startsWith('data:') || p.startsWith('blob:')) return p;
   return (import.meta.env.VITE_API_URL || '') + p;
 };
 

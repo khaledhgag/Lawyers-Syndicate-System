@@ -63,7 +63,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: Number(process.env.MAX_FILE_SIZE) || 26214400 },
+  limits: { fileSize: Number(process.env.MAX_FILE_SIZE) || 83886080 },
 });
 
 // helper to set subfolder for a route

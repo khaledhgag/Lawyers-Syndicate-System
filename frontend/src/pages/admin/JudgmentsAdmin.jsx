@@ -10,7 +10,7 @@ import Modal from '../../components/ui/Modal.jsx';
 import { FileInput } from '../../components/admin/AdminShared.jsx';
 
 const LIMIT = 15;
-const BATCH = 25; // files per request during bulk upload
+const BATCH = 1; // one file per request keeps large PDF uploads stable
 const ACCEPT = '.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 const empty = { title: '', appealNumber: '', year: new Date().getFullYear(), summary: '', pdf: null };
 

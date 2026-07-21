@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FiPhone, FiMail, FiMapPin, FiClock } from 'react-icons/fi';
-import { FaFacebookF, FaYoutube, FaWhatsapp, FaInstagram, FaTwitter } from 'react-icons/fa';
+import { FaFacebookF, FaYoutube, FaWhatsapp, FaInstagram, FaTelegramPlane } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 import { navItems } from '../../config/nav.js';
 import { useSettings } from '../../context/SettingsContext.jsx';
 import { whatsappHref } from '../../utils/whatsapp.js';
@@ -13,10 +14,11 @@ export default function Footer() {
 
   const socials = [
     { url: social.facebook, Icon: FaFacebookF },
-    { url: social.twitter, Icon: FaTwitter },
+    { url: social.twitter, Icon: FaXTwitter },
     { url: social.youtube, Icon: FaYoutube },
     { url: social.instagram, Icon: FaInstagram },
     { url: whatsappHref(social.whatsapp) || social.whatsapp, Icon: FaWhatsapp },
+    { url: social.telegram, Icon: FaTelegramPlane },
   ].filter((x) => x.url);
 
   return (

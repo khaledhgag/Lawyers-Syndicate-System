@@ -27,6 +27,7 @@ const settingsSchema = new mongoose.Schema(
       youtube: { type: String, default: '' },
       instagram: { type: String, default: '' },
       whatsapp: { type: String, default: '' },
+      telegram: { type: String, default: '' },
     },
   },
   { timestamps: true }
