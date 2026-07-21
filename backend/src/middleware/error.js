@@ -31,7 +31,8 @@ export const errorHandler = (err, req, res, next) => {
   // Multer file size
   if (err.code === 'LIMIT_FILE_SIZE') {
     statusCode = 400;
-    message = 'حجم الملف أكبر من الحد المسموح';
+    const maxMb = Math.round((Number(process.env.MAX_FILE_SIZE) || 83886080) / 1024 / 1024);
+    message = `حجم الملف أكبر من الحد المسموح (${maxMb}MB)`;
   }
   if (err.code === 'LIMIT_UNEXPECTED_FILE') {
     statusCode = 400;

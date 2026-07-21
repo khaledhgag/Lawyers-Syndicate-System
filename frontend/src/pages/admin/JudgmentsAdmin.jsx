@@ -11,8 +11,17 @@ import { FileInput } from '../../components/admin/AdminShared.jsx';
 
 const LIMIT = 15;
 const BATCH = 1; // one file per request keeps large PDF uploads stable
+const MAX_UPLOAD_SIZE = 80 * 1024 * 1024;
 const ACCEPT = '.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 const empty = { title: '', appealNumber: '', year: new Date().getFullYear(), summary: '', pdf: null };
+
+const uploadErrorMessage = (err) => {
+  const status = err?.response?.status;
+  const message = err?.response?.data?.message || err?.message || 'خطأ غير معروف';
+  if (status === 413) return 'حجم الملف أكبر من الحد المسموح على الاستضافة أو البروكسي';
+  if (status) return `${status}: ${message}`;
+  return message;
+};
 
 export default function JudgmentsAdmin() {
   const [filters, setFilters] = useState({ search: '', year: '' });
@@ -110,22 +119,34 @@ export default function JudgmentsAdmin() {
     setProgress({ done: 0, total: bulkFiles.length });
     let ok = 0;
     let failed = 0;
+    const errors = [];
     try {
       for (let i = 0; i < bulkFiles.length; i += BATCH) {
         const chunk = bulkFiles.slice(i, i + BATCH);
+        const oversized = chunk.filter((f) => f.size > MAX_UPLOAD_SIZE);
+        if (oversized.length) {
+          failed += oversized.length;
+          oversized.forEach((f) => errors.push(`${f.name}: أكبر من 80MB`));
+          setProgress({ done: Math.min(i + BATCH, bulkFiles.length), total: bulkFiles.length });
+          continue;
+        }
         const fd = new FormData();
         chunk.forEach((f) => fd.append('files', f));
         try {
           const res = await judgmentsApi.bulkUpload(fd);
           ok += res.count || chunk.length;
-        } catch {
+        } catch (err) {
           failed += chunk.length;
+          errors.push(`${chunk.map((f) => f.name).join(', ')}: ${uploadErrorMessage(err)}`);
         }
         setProgress({ done: Math.min(i + BATCH, bulkFiles.length), total: bulkFiles.length });
       }
-      toast.success(`تم رفع ${ok} ملف${failed ? ` (فشل ${failed})` : ''}`);
-      setBulkOpen(false);
-      setBulkFiles([]);
+      if (ok) toast.success(`تم رفع ${ok} ملف${failed ? ` (فشل ${failed})` : ''}`);
+      if (errors.length) toast.error(errors.slice(0, 3).join(' | '), { duration: 9000 });
+      if (!failed) {
+        setBulkOpen(false);
+        setBulkFiles([]);
+      }
       load();
       judgmentsApi.meta().then(setMeta).catch(() => {});
     } finally {
