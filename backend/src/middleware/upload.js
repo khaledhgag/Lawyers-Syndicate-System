@@ -28,6 +28,7 @@ const EXT_BY_MIME = {
 
 const DOC_MIMES = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 const VIDEO_MIMES = ['video/mp4', 'video/webm', 'video/quicktime'];
+export const MAX_UPLOAD_FILE_SIZE = Math.max(Number(process.env.MAX_FILE_SIZE) || 0, 83886080);
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -63,7 +64,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: Number(process.env.MAX_FILE_SIZE) || 83886080 },
+  limits: { fileSize: MAX_UPLOAD_FILE_SIZE },
 });
 
 // helper to set subfolder for a route

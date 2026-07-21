@@ -9,6 +9,7 @@ import Contract from '../models/Contract.js';
 import GovernmentLink from '../models/GovernmentLink.js';
 import Activity from '../models/Activity.js';
 import Complaint from '../models/Complaint.js';
+import { MAX_UPLOAD_FILE_SIZE } from '../middleware/upload.js';
 
 // @desc Dashboard statistics
 // @route GET /api/stats
@@ -66,12 +67,11 @@ export const getStats = asyncHandler(async (req, res) => {
 });
 
 export const getUploadConfig = asyncHandler(async (req, res) => {
-  const maxFileSize = Number(process.env.MAX_FILE_SIZE) || 83886080;
   res.json({
     success: true,
     data: {
-      maxFileSize,
-      maxFileSizeMB: Math.round(maxFileSize / 1024 / 1024),
+      maxFileSize: MAX_UPLOAD_FILE_SIZE,
+      maxFileSizeMB: Math.round(MAX_UPLOAD_FILE_SIZE / 1024 / 1024),
       allowed: ['pdf', 'doc', 'docx', 'jpg', 'png', 'webp', 'gif', 'mp4', 'webm', 'mov'],
     },
   });

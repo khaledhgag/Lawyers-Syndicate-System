@@ -1,3 +1,5 @@
+import { MAX_UPLOAD_FILE_SIZE } from './upload.js';
+
 // Async handler wrapper to avoid repetitive try/catch
 export const asyncHandler = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next);
@@ -31,7 +33,7 @@ export const errorHandler = (err, req, res, next) => {
   // Multer file size
   if (err.code === 'LIMIT_FILE_SIZE') {
     statusCode = 400;
-    const maxMb = Math.round((Number(process.env.MAX_FILE_SIZE) || 83886080) / 1024 / 1024);
+    const maxMb = Math.round(MAX_UPLOAD_FILE_SIZE / 1024 / 1024);
     message = `حجم الملف أكبر من الحد المسموح (${maxMb}MB)`;
   }
   if (err.code === 'LIMIT_UNEXPECTED_FILE') {
