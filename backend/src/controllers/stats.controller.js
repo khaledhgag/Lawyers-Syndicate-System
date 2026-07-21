@@ -64,3 +64,15 @@ export const getStats = asyncHandler(async (req, res) => {
     },
   });
 });
+
+export const getUploadConfig = asyncHandler(async (req, res) => {
+  const maxFileSize = Number(process.env.MAX_FILE_SIZE) || 83886080;
+  res.json({
+    success: true,
+    data: {
+      maxFileSize,
+      maxFileSizeMB: Math.round(maxFileSize / 1024 / 1024),
+      allowed: ['pdf', 'doc', 'docx', 'jpg', 'png', 'webp', 'gif', 'mp4', 'webm', 'mov'],
+    },
+  });
+});

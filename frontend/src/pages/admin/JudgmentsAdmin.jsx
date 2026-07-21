@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { FiEdit2, FiTrash2, FiSearch, FiFileText, FiPlus, FiUploadCloud } from 'react-icons/fi';
-import { judgmentsApi } from '../../api/services.js';
+import { judgmentsApi, statsApi } from '../../api/services.js';
 import { fileUrl } from '../../api/axios.js';
 import Loader from '../../components/ui/Loader.jsx';
 import EmptyState from '../../components/ui/EmptyState.jsx';
@@ -41,6 +41,8 @@ export default function JudgmentsAdmin() {
   const [bulkFiles, setBulkFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
+  const [bulkError, setBulkError] = useState('');
+  const [uploadConfig, setUploadConfig] = useState(null);
 
   useEffect(() => { judgmentsApi.meta().then(setMeta).catch(() => {}); }, []);
 
@@ -113,10 +115,18 @@ export default function JudgmentsAdmin() {
 
   const toggle = (id) => setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
 
+  const openBulk = () => {
+    setBulkFiles([]);
+    setBulkError('');
+    setBulkOpen(true);
+    statsApi.uploadConfig().then((r) => setUploadConfig(r.data)).catch(() => setUploadConfig(null));
+  };
+
   // Upload many PDFs in batches to avoid huge single requests
   const runBulkUpload = async () => {
     if (!bulkFiles.length) return toast.error('اختر ملفات أولاً');
     setUploading(true);
+    setBulkError('');
     setProgress({ done: 0, total: bulkFiles.length });
     let ok = 0;
     let failed = 0;
@@ -138,6 +148,12 @@ export default function JudgmentsAdmin() {
           const res = await judgmentsApi.bulkUpload(fd);
           ok += res.count || chunk.length;
         } catch (err) {
+          console.error('Judgment bulk upload failed', {
+            files: chunk.map((f) => ({ name: f.name, size: f.size, type: f.type })),
+            status: err?.response?.status,
+            data: err?.response?.data,
+            message: err?.message,
+          });
           failed += chunk.length;
           errors.push(`${chunk.map((f) => f.name).join(', ')}: ${uploadErrorMessage(err)}`);
         }
@@ -145,7 +161,11 @@ export default function JudgmentsAdmin() {
         await wait(500);
       }
       if (ok) toast.success(`تم رفع ${ok} ملف${failed ? ` (فشل ${failed})` : ''}`);
-      if (errors.length) toast.error(errors.slice(0, 3).join(' | '), { duration: 9000 });
+      if (errors.length) {
+        const text = errors.slice(0, 5).join(' | ');
+        setBulkError(text);
+        toast.error(text, { duration: 9000 });
+      }
       if (!failed) {
         setBulkOpen(false);
         setBulkFiles([]);
@@ -172,7 +192,7 @@ export default function JudgmentsAdmin() {
           {pagination?.total > 0 && (
             <button onClick={deleteAll} className="btn-danger px-4 py-2"><FiTrash2 /> حذف الكل</button>
           )}
-          <button onClick={() => { setBulkFiles([]); setBulkOpen(true); }} className="btn-gold px-4 py-2"><FiUploadCloud /> رفع دفعة</button>
+          <button onClick={openBulk} className="btn-gold px-4 py-2"><FiUploadCloud /> رفع دفعة</button>
           <button onClick={openNew} className="btn-primary px-4 py-2"><FiPlus /> إضافة حكم</button>
         </div>
       </div>
@@ -269,6 +289,18 @@ export default function JudgmentsAdmin() {
               <div className="h-2 rounded-full bg-slate-100">
                 <div className="h-2 rounded-full bg-primary-600 transition-all" style={{ width: `${progress.total ? (progress.done / progress.total) * 100 : 0}%` }} />
               </div>
+            </div>
+          )}
+
+          {uploadConfig && (
+            <p className="rounded-lg bg-slate-50 p-3 text-xs text-slate-600">
+              حد الرفع الحالي على السيرفر: <span className="font-bold">{uploadConfig.maxFileSizeMB}MB</span> للملف الواحد.
+            </p>
+          )}
+
+          {bulkError && (
+            <div className="whitespace-pre-wrap rounded-lg bg-red-50 p-3 text-sm leading-7 text-red-700">
+              {bulkError}
             </div>
           )}
 

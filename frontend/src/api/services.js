@@ -60,6 +60,7 @@ export const settingsApi = {
 
 export const statsApi = {
   get: () => api.get('/stats').then((r) => r.data),
+  uploadConfig: () => api.get('/stats/upload-config').then((r) => r.data),
 };
 
 export const backupsApi = {
