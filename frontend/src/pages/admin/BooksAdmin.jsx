@@ -14,6 +14,7 @@ const BATCH = 1; // one file per request keeps large PDF uploads stable
 const MAX_UPLOAD_SIZE = 80 * 1024 * 1024;
 const ACCEPT = '.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 const empty = { title: '', appealNumber: '', year: new Date().getFullYear(), summary: '', pdf: null };
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const uploadErrorMessage = (err) => {
   const status = err?.response?.status;
@@ -121,8 +122,9 @@ export default function BooksAdmin() {
     let failed = 0;
     const errors = [];
     try {
-      for (let i = 0; i < bulkFiles.length; i += BATCH) {
-        const chunk = bulkFiles.slice(i, i + BATCH);
+      const queue = [...bulkFiles].sort((a, b) => a.size - b.size);
+      for (let i = 0; i < queue.length; i += BATCH) {
+        const chunk = queue.slice(i, i + BATCH);
         const oversized = chunk.filter((f) => f.size > MAX_UPLOAD_SIZE);
         if (oversized.length) {
           failed += oversized.length;
@@ -140,6 +142,7 @@ export default function BooksAdmin() {
           errors.push(`${chunk.map((f) => f.name).join(', ')}: ${uploadErrorMessage(err)}`);
         }
         setProgress({ done: Math.min(i + BATCH, bulkFiles.length), total: bulkFiles.length });
+        await wait(500);
       }
       if (ok) toast.success(`تم رفع ${ok} ملف${failed ? ` (فشل ${failed})` : ''}`);
       if (errors.length) toast.error(errors.slice(0, 3).join(' | '), { duration: 9000 });
